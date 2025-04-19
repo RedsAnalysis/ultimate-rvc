@@ -593,6 +593,17 @@ class SettingsManagementConfig(BaseModel):
 
     """
 
+    load_config_name: DropdownConfig = DropdownConfig(
+        label="Configuration name",
+        info="The name of a configuration to load UI settings from",
+        value=None,
+        render=False,
+        exclude_value=True,
+    )
+    delete_config_names: DropdownConfig = DropdownConfig.multi_delete(
+        label="Configuration names",
+        info="Select the name of one or more configurations to delete",
+    )
     dummy_checkbox: CheckboxConfig = CheckboxConfig(
         value=False,
         visible=False,
@@ -693,20 +704,16 @@ class TotalConfig(BaseModel):
     @cached_property
     def all(self) -> list[AnyComponentConfig]:
         """
-        Recursively collect all component configuration models nested
-        within the current model instance.
+        Recursively collect those component configuration models nested
+        within the current model instance, which have values that are
+        not excluded.
 
         Returns
         -------
         list[AnyComponentConfig]
             A list of component configuration models found within the
-            current model instance.
-
-        Notes
-        -----
-        This method processes only explicitly defined model fields.
-        Dynamically added attributes or private fields are not
-        processed.
+            current model instance, which have values that are not
+            excluded.
 
         """
 
@@ -714,36 +721,10 @@ class TotalConfig(BaseModel):
             component_configs: list[Any] = []
             for _, value in model:
                 if isinstance(value, ComponentConfig):
-                    component_configs.append(value)
+                    if not value.exclude_value:
+                        component_configs.append(value)
                 elif isinstance(value, BaseModel):
                     component_configs.extend(_collect(value))
             return component_configs
 
         return _collect(self)
-
-    def update_all(self, *values: *tuple[Any, ...]) -> None:
-        """
-        Update the default value of all component configuration models
-        nested within the current model instance.
-
-        Parameters
-        ----------
-        *values : tuple[Any, ...]
-            The new values to assign to the `value` field of each
-            component configuration model found within the current model
-            instance.
-
-        Notes
-        -----
-        The number and order of the provided values must match the
-        number and order of the nested component configurations in the
-        current model instance. Generally speaking, the provided values
-        should always be inferred from the `self.all` property.
-
-        """
-        for value, component_config in zip(values, self.all, strict=True):
-            exclude_value = component_config.exclude_value
-            if (
-                isinstance(exclude_value, list) and value not in exclude_value
-            ) or not exclude_value:
-                component_config.value = value

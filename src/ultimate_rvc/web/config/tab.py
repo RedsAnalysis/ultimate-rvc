@@ -46,7 +46,7 @@ class BaseTabConfig(BaseModel):
         info="The model to use for generating speaker embeddings.",
         value=EmbedderModel.CONTENTVEC,
         choices=list(EmbedderModel),
-        exclude_value=[EmbedderModel.CUSTOM],
+        exclude_value=True,
     )
     custom_embedder_model: DropdownConfig = DropdownConfig(
         label="Custom embedder model",
@@ -578,6 +578,7 @@ class TrainingConfig(BaseTabConfig):
         allow_custom_value=True,
         visible=False,
         render=False,
+        exclude_value=True,
     )
     dataset_name: TextboxConfig = TextboxConfig(
         label="Dataset name",
@@ -586,6 +587,7 @@ class TrainingConfig(BaseTabConfig):
             " audio files will be added to it."
         ),
         value="My dataset",
+        exclude_value=True,
     )
     preprocess_model: DropdownConfig = DropdownConfig(
         label="Model name",
@@ -596,6 +598,7 @@ class TrainingConfig(BaseTabConfig):
         value="My model",
         allow_custom_value=True,
         render=False,
+        exclude_value=True,
     )
     sample_rate: DropdownConfig = DropdownConfig(
         label="Sample rate",
@@ -632,7 +635,7 @@ class TrainingConfig(BaseTabConfig):
         ),
         value=AudioSplitMethod.AUTOMATIC,
         choices=list(AudioSplitMethod),
-        exclude_value=[AudioSplitMethod.SIMPLE],
+        exclude_value=True,
     )
     chunk_len: SliderConfig = SliderConfig(
         label="Chunk length",
@@ -670,7 +673,7 @@ class TrainingConfig(BaseTabConfig):
         info="The method to use for extracting pitch features.",
         value=TrainingF0Method.RMVPE,
         choices=list(TrainingF0Method),
-        exclude_value=[TrainingF0Method.CREPE, TrainingF0Method.CREPE_TINY],
+        exclude_value=True,
     )
 
     hop_length: SliderConfig = SliderConfig.hop_length(
@@ -777,7 +780,7 @@ class TrainingConfig(BaseTabConfig):
         ),
         value=PretrainedType.DEFAULT,
         choices=list(PretrainedType),
-        exclude_value=[PretrainedType.CUSTOM],
+        exclude_value=True,
     )
     custom_pretrained_model: DropdownConfig = DropdownConfig(
         label="Custom pretrained model",
@@ -838,6 +841,7 @@ class TrainingConfig(BaseTabConfig):
         info="The name to give the uploaded voice model.",
         value=None,
         visible=False,
+        exclude_value=True,
     )
     training_acceleration: DropdownConfig = DropdownConfig.hardware_acceleration()
     training_gpus: DropdownConfig = DropdownConfig.gpu()

@@ -142,9 +142,8 @@ def _render_step_1(total_config: TotalConfig) -> None:
             tab_config.split_method.instance.change(
                 partial(
                     toggle_visibilities,
+                    2,
                     targets={AudioSplitMethod.SIMPLE},
-                    # TODO fix this
-                    defaults=[tab_config.chunk_len.value, tab_config.overlap_len.value],
                 ),
                 inputs=tab_config.split_method.instance,
                 outputs=[
@@ -281,7 +280,7 @@ def _render_step_2(total_config: TotalConfig) -> None:
                     tab_config.extraction_acceleration.instantiate()
                     tab_config.extraction_gpus.instantiate(
                         choices=GPU_CHOICES,
-                        use_gradio_default=True,
+                        value=GPU_CHOICES[0][1] if GPU_CHOICES else None,
                     )
             tab_config.extraction_acceleration.instance.change(
                 partial(toggle_visibility, targets={DeviceType.GPU}),
@@ -328,7 +327,6 @@ def _render_step_2(total_config: TotalConfig) -> None:
                     tab_config.f0_method.value,
                     tab_config.hop_length.value,
                     tab_config.embedder_model.value,
-                    tab_config.custom_embedder_model.value,
                     tab_config.include_mutes.value,
                     CPU_CORES,
                     tab_config.extraction_acceleration.value,
@@ -338,7 +336,6 @@ def _render_step_2(total_config: TotalConfig) -> None:
                     tab_config.f0_method.instance,
                     tab_config.hop_length.instance,
                     tab_config.embedder_model.instance,
-                    tab_config.custom_embedder_model.instance,
                     tab_config.include_mutes.instance,
                     tab_config.extraction_cores.instance,
                     tab_config.extraction_acceleration.instance,
@@ -441,7 +438,6 @@ def _render_step_3(total_config: TotalConfig) -> None:
                     tab_config.vocoder.value,
                     tab_config.index_algorithm.value,
                     tab_config.pretrained_type.value,
-                    tab_config.custom_pretrained_model.value,
                     tab_config.save_interval.value,
                     tab_config.save_all_checkpoints.value,
                     tab_config.save_all_weights.value,
@@ -460,7 +456,6 @@ def _render_step_3(total_config: TotalConfig) -> None:
                     tab_config.vocoder.instance,
                     tab_config.index_algorithm.instance,
                     tab_config.pretrained_type.instance,
-                    tab_config.custom_pretrained_model.instance,
                     tab_config.save_interval.instance,
                     tab_config.save_all_checkpoints.instance,
                     tab_config.save_all_weights.instance,
@@ -537,7 +532,7 @@ def _render_step_3_device_settings(tab_config: MultiStepTrainingConfig) -> None:
             tab_config.training_acceleration.instantiate()
             tab_config.training_gpus.instantiate(
                 choices=GPU_CHOICES,
-                use_gradio_default=True,
+                value=GPU_CHOICES[0][1] if GPU_CHOICES else None,
             )
         tab_config.training_acceleration.instance.change(
             partial(toggle_visibility, targets={DeviceType.GPU}),
@@ -573,7 +568,10 @@ def _toggle_dataset_input(
     """
     is_new_dataset = dataset_type == DatasetType.NEW_DATASET
     return (
-        gr.Textbox(visible=is_new_dataset, value="My dataset"),
+        gr.Textbox(
+            visible=is_new_dataset,
+            value="My dataset",  # TODO this should be component_config.value
+        ),
         gr.File(visible=is_new_dataset, value=None),
         gr.Dropdown(visible=not is_new_dataset, value=None),
     )

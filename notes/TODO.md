@@ -1,5 +1,8 @@
 # TODO
-  
+  * fix configuration saving/loading so that visibility status can also be saved and loaded
+  * this needs to be done statically: when defining a configuration component there should be an optional children field which denotes the children of the component that will be unfolded, i.e. shouldb become visible. There hsould also (perhaps on the same field) be a defined value for which the child components should be visible. Then during the saving of new component values, we will do a check where we see if a given component has any children. if so and if the new component value is equal to the value for which the children should become visible, then we set the visibility field on the children to true. 
+  * When this has been implemented we can finally have all the components with children be included rather than excluded from saving and loading as is the case now (and of course the visiblity of their children will be saved too)
+
 ## Project/task management
 
 * Should find tool for project/task management
