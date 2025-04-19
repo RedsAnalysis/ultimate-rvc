@@ -24,6 +24,8 @@ if TYPE_CHECKING:
 
     from ultimate_rvc.web.config.component import AudioConfig
     from ultimate_rvc.web.typing_extra import (
+        BaseDropdownChoices,
+        BaseDropdownValue,
         ComponentVisibilityKwArgs,
         DropdownChoices,
         DropdownValue,
@@ -237,33 +239,52 @@ def toggle_visibility(
 
 
 def toggle_visibilities(
+    num_components: int,
     value: T,
     targets: set[T],
-    defaults: Sequence[str | float | None],
-) -> tuple[dict[str, Any], ...]:
+    defaults: Sequence[str | float | None] = [],
+    update_default: bool = False,
+) -> list[dict[str, Any]]:
     """
     Toggle the visibility of multiple components based on equality of
     a value and one of a set of targets.
 
     Parameters
     ----------
+    num_components : int
+        Number of components to set visibility for.
     value : T
         The value to compare against the target.
     targets : set[T]
         The set of targets to compare the value against.
-    defaults : Sequence[str | float | None]
+    defaults : Sequence[str | float | None], optional
         Default values for the components.
+    update_default : bool, default=False
+        whether to update the default values of the components.
 
     Returns
     -------
-    tuple[dict[str, Any], ...]
-        Tuple of dictionaries which update the visibility of the
+    list[dict[str, Any]]
+        List of dictionaries which update the visibility of the
+        components.
+
+    Raises
+    ------
+    ValueError
+        If the number of default values does not match the number of
         components.
 
     """
-    return tuple(
-        gr.update(visible=value in targets, value=default) for default in defaults
-    )
+    if update_default and len(defaults) != num_components:
+        err_msg = "Number of default values must be equal to the number of components."
+        raise ValueError(err_msg)
+    update_args_list: list[ComponentVisibilityKwArgs] = []
+    for index in range(num_components):
+        update_args: ComponentVisibilityKwArgs = {"visible": value in targets}
+        if update_default:
+            update_args["value"] = defaults[index]
+        update_args_list.append(update_args)
+    return [gr.update(**update_args) for update_args in update_args_list]
 
 
 def toggle_visible_component(
@@ -315,6 +336,70 @@ def toggle_visible_component(
             return gr.update(**update_args)
         case _:
             return tuple(gr.update(**update_args) for update_args in update_args_list)
+
+
+def initialize_dropdowns(
+    fn: Callable[P, BaseDropdownChoices],
+    num_components: int,
+    value: BaseDropdownValue = None,
+    value_indices: Sequence[int] = [],
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> list[gr.Dropdown]:
+    """
+    Initialize the choices and optionally the value of one or more
+    dropdown components.
+
+
+    Parameters
+    ----------
+    fn : Callable[P, BaseDropdownChoices]
+        Function to get initial choices for the dropdown components.
+    num_components : int
+        Number of dropdown components to initialize.
+    value : BaseDropdownValue, optional
+        New value for dropdown components.
+    value_indices : Sequence[int], default=[]
+        Indices of dropdown components to initialize the value for.
+    args : P.args
+        Positional arguments to pass to the function used to initialize
+        dropdown choices.
+    kwargs : P.kwargs
+        Keyword arguments to pass to the function used to initialize
+        dropdown choices.
+
+    Returns
+    -------
+    list[gr.Dropdown]
+        List of initialized dropdown components.
+
+    Raises
+    ------
+    ValueError
+        If not all provided indices are unique or if an index exceeds
+        or is equal to the number of dropdown components.
+
+    """
+    if len(value_indices) != len(set(value_indices)):
+        err_msg = "Value indices must be unique."
+        raise ValueError(err_msg)
+    if value_indices and max(value_indices) >= num_components:
+        err_msg = (
+            "Index of a dropdown component to update the value for exceeds the number"
+            " of dropdown components to update."
+        )
+        raise ValueError(err_msg)
+    updated_choices = fn(*args, **kwargs)
+    if value is None or value not in updated_choices:
+        value = next(iter(updated_choices), None)
+        if isinstance(value, tuple):
+            value = value[1]
+    update_args_list: list[UpdateDropdownKwArgs] = [
+        {"choices": updated_choices} for _ in range(num_components)
+    ]
+    for index in value_indices:
+        update_args_list[index]["value"] = value
+    return [gr.Dropdown(**update_args) for update_args in update_args_list]
 
 
 def update_dropdowns(
@@ -607,52 +692,46 @@ def setup_delete_event(
     ).success(partial(render_msg, success_msg), outputs=outputs, show_progress="hidden")
 
 
-def save_total_config(
-    name: str,
-    *values: *tuple[Any, ...],
-    total_config: TotalConfig,
-) -> None:
+def save_total_config_values(name: str, *values: *tuple[Any, ...]) -> None:
     """
-    Save the provided total configuration model to a JSON file
-    after updating each of its nested component configurations
-    with the corresponding provided value.
+    Save the provided component values to a total configuration model
+    and write it to a JSON file with the provided name.
 
     Parameters
     ----------
     name : str
-        The name of the JSON file to save the provided configuration to.
+        The name of the JSON file to write the total configuration model
+        to.
     *values : *tuple[Any, ...]
-        The values to update each of the nested component configurations
-        in the provided total configuration model with.
-
-    total_config : TotalConfig
-        The total component configuration model to save.
+        The component values to save to the total configuration model.
 
     """
-    total_config.update_all(*values)
-    save_config(name, total_config)
+    new_config = TotalConfig()
+    for value, component_config in zip(values, new_config.all, strict=True):
+        component_config.value = value
+
+    save_config(name, new_config)
 
 
-def update_total_config(name: str, total_config: TotalConfig) -> tuple[Any, ...]:
+def load_total_config_values(name: str) -> tuple[Any, ...]:
     """
-    Update each component configuration nested in the provided total
-    configuration model with the corresponding default value
-    from a configuration loaded from a JSON file with the provided name.
+    Load a total configuration model from a JSON file with the provided
+    name and return the non-excluded values of its nested component
+    configurations.
+
 
     Parameters
     ----------
     name : str
-        The name of the configuration to load.
-    total_config : TotalConfig
-        The total component configuration model to update.
+        The name of the JSON file to load the total configuration model
+        from.
 
     Returns
     -------
     tuple[Any, ...]
-        The values of the updated component configurations.
+        The non-excluded values of the nested component configurations
+        in the loaded total configuration model.
 
     """
     new_config = load_config(name, TotalConfig)
-    values = tuple(c.value for c in new_config.all)
-    total_config.update_all(*values)
-    return values
+    return tuple(c.value for c in new_config.all)

@@ -12,9 +12,8 @@ from enum import StrEnum, auto
 
 type AnyCallable = Callable[..., Any]
 
-type DropdownChoices = (
-    Sequence[str | int | float | tuple[str, str | int | float]] | None
-)
+type BaseDropdownChoices = Sequence[str | int | float | tuple[str, str | int | float]]
+type DropdownChoices = BaseDropdownChoices | None
 type BaseDropdownValue = str | int | float | Sequence[str | int | float] | None
 type DropdownValue = BaseDropdownValue | AnyCallable
 
@@ -95,20 +94,6 @@ class UpdateDropdownKwArgs(TypedDict, total=False):
     """
 
     choices: DropdownChoices
-    value: DropdownValue
-
-
-class DropdownValueKwArgs(TypedDict, total=False):
-    """
-    Keyword arguments for setting the value of a dropdown component.
-
-    Attributes
-    ----------
-    value : DropdownValue
-        The updated value for the dropdown component.
-
-    """
-
     value: DropdownValue
 
 

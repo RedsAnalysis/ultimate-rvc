@@ -18,11 +18,11 @@ from ultimate_rvc.web.common import (
     confirm_box_js,
     confirmation_harness,
     exception_harness,
+    load_total_config_values,
     render_msg,
-    save_total_config,
+    save_total_config_values,
     setup_delete_event,
     update_dropdowns,
-    update_total_config,
 )
 
 if TYPE_CHECKING:
@@ -70,17 +70,13 @@ def _render_config_files_tab(
 
         with gr.Accordion("Load configuration", open=False), gr.Row():
             with gr.Column():
-                load_config_name = gr.Dropdown(
-                    label="Configuration name",
-                    info="The name of a configuration to load UI settings from",
-                    choices=get_config_names(),
-                )
+                tab_config.load_config_name.instance.render()
                 load_config_btn = gr.Button("Load", variant="primary")
             with gr.Column():
                 load_config_msg = gr.Textbox(label="Output message", interactive=False)
 
         save_config_btn.click(
-            partial(exception_harness(save_total_config), total_config=total_config),
+            exception_harness(save_total_config_values),
             inputs=[save_config_name, *components],
             outputs=save_config_msg,
         ).success(
@@ -90,13 +86,17 @@ def _render_config_files_tab(
         ).then(
             partial(update_dropdowns, get_config_names, 1, value_indices=[0]),
             inputs=save_config_name,
-            outputs=load_config_name,
+            outputs=tab_config.load_config_name.instance,
+            show_progress="hidden",
+        ).then(
+            partial(update_dropdowns, get_config_names, 1, [], [0]),
+            outputs=tab_config.delete_config_names.instance,
             show_progress="hidden",
         )
 
         load_config_btn.click(
-            partial(exception_harness(update_total_config), total_config=total_config),
-            inputs=load_config_name,
+            exception_harness(load_total_config_values),
+            inputs=tab_config.load_config_name.instance,
             outputs=components,
             show_progress_on=load_config_msg,
         ).success(
@@ -107,13 +107,8 @@ def _render_config_files_tab(
 
         with gr.Accordion("Delete configuration(s)", open=False), gr.Row():
             with gr.Column():
-                delete_config_names = gr.Dropdown(
-                    label="Configuration names",
-                    info="Select the name of one or more configurations to delete",
-                    multiselect=True,
-                    choices=get_config_names(),
-                )
-                delete_config_btn = gr.Button("Delet selected", variant="secondary")
+                tab_config.delete_config_names.instance.render()
+                delete_config_btn = gr.Button("Delete selected", variant="secondary")
                 delete_all_config_btn = gr.Button("Delete all", variant="primary")
             with gr.Column():
                 delete_config_msg = gr.Textbox(
@@ -123,7 +118,10 @@ def _render_config_files_tab(
         delete_config_click = setup_delete_event(
             delete_config_btn,
             delete_configs,
-            [tab_config.dummy_checkbox.instance, delete_config_names],
+            [
+                tab_config.dummy_checkbox.instance,
+                tab_config.delete_config_names.instance,
+            ],
             delete_config_msg,
             "Are you sure you want to delete the configurations with the selected"
             " names?",
@@ -140,7 +138,10 @@ def _render_config_files_tab(
         for event in [delete_config_click, delete_all_config_click]:
             event.success(
                 partial(update_dropdowns, get_config_names, 2, [], [1]),
-                outputs=[load_config_name, delete_config_names],
+                outputs=[
+                    tab_config.load_config_name.instance,
+                    tab_config.delete_config_names.instance,
+                ],
                 show_progress="hidden",
             )
 

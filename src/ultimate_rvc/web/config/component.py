@@ -27,7 +27,6 @@ from ultimate_rvc.web.typing_extra import (
     BaseDropdownValue,
     BaseRadioValue,
     DropdownChoices,
-    DropdownValueKwArgs,
     RadioChoices,
 )
 
@@ -57,10 +56,8 @@ class ComponentConfig(BaseModel, Generic[U, T]):  # noqa: UP046
         The scale of the component.
     render : bool, default=True
         Whether to render the component when instantiated.
-    exclude_value : bool | list[str], default=False
+    exclude_value : bool, default=False
         If True, the default value of the component cannot be updated.
-        If a list of of literals is provided, the default value cannot
-        be updated to any of those.
     _instance: T | None, default=None
         Internal attribute storing the component instance. Will be null
         until the component is instantiated.
@@ -75,7 +72,7 @@ class ComponentConfig(BaseModel, Generic[U, T]):  # noqa: UP046
     visible: bool = True
     scale: int | None = None
     render: bool = True
-    exclude_value: bool | list[str] = False
+    exclude_value: bool = False
     _instance: T | None = PrivateAttr(default=None)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -208,9 +205,9 @@ class SliderConfig(InfoComponentConfig[float | None, gr.Slider]):
         self._instance = gr.Slider(
             label=self.label,
             info=self.info,
-            value=value or self.value,
+            value=self.value if value is None else value,
             minimum=self.minimum,
-            maximum=maximum or self.maximum,
+            maximum=self.maximum if maximum is None else maximum,
             step=self.step,
             visible=self.visible,
             scale=self.scale,
@@ -474,38 +471,34 @@ class DropdownConfig(InfoComponentConfig[BaseDropdownValue, gr.Dropdown]):
 
     def instantiate(
         self,
+        value: BaseDropdownValue = None,
         choices: DropdownChoices = None,
-        use_gradio_default: bool = False,
     ) -> None:
         """
         Instantiate the dropdown component.
 
         Parameters
         ----------
+        value : BaseDropdownValue, default=None
+            The initial value of the dropdown component. If not
+            provided, the value specified in the configuration is used.
         choices : DropdownChoices, default=None
             Custom choices to instantiate the dropdown component with.
             If not provided, the dropdown will be instantiated with the
             choices specified in the configuration.
-        use_gradio_default : bool, default=False
-            Whether to use the default value provided by Gradio for the
-            dropdown component. If set to True, the value specified in
-            the configuration will be ignored.
 
         """
-        value_kwargs: DropdownValueKwArgs = (
-            {} if use_gradio_default else {"value": self.value}
-        )
         self._instance = gr.Dropdown(
             label=self.label,
             info=self.info,
-            choices=choices or self.choices,
+            value=self.value if value is None else value,
+            choices=self.choices if choices is None else choices,
             multiselect=self.multiselect,
             allow_custom_value=self.allow_custom_value,
             type=self.type,
             visible=self.visible,
             scale=self.scale,
             render=self.render,
-            **value_kwargs,
         )
 
     @classmethod
@@ -528,7 +521,7 @@ class DropdownConfig(InfoComponentConfig[BaseDropdownValue, gr.Dropdown]):
             ),
             value=DeviceType.AUTOMATIC,
             choices=list(DeviceType),
-            exclude_value=[DeviceType.GPU],
+            exclude_value=True,
         )
 
     @classmethod
@@ -645,7 +638,7 @@ class TextboxConfig(InfoComponentConfig[str | None, gr.Textbox]):
         self._instance = gr.Textbox(
             label=self.label,
             info=self.info,
-            value=value or self.value,
+            value=self.value if value is None else value,
             placeholder=self.placeholder,
             visible=self.visible,
             scale=self.scale,

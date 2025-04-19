@@ -26,13 +26,14 @@ from ultimate_rvc.core.manage.audio import (
     get_saved_output_audio,
     get_saved_speech_audio,
 )
+from ultimate_rvc.core.manage.config import get_config_names, load_config
 from ultimate_rvc.core.manage.models import (
     get_custom_embedder_model_names,
     get_custom_pretrained_model_names,
     get_training_model_names,
     get_voice_model_names,
 )
-from ultimate_rvc.web.common import update_total_config
+from ultimate_rvc.web.common import initialize_dropdowns
 from ultimate_rvc.web.config.main import TotalConfig
 from ultimate_rvc.web.tabs.generate.song_cover.multi_step_generation import (
     render as render_song_cover_multi_step_tab,
@@ -53,11 +54,9 @@ from ultimate_rvc.web.tabs.train.multi_step_generation import (
     render as render_train_multi_step_tab,
 )
 
-total_config = TotalConfig()
 config_name = os.environ.get("URVC_CONFIG")
-if config_name:
-    update_total_config(config_name, total_config)
 cookiefile = os.environ.get("YT_COOKIEFILE")
+total_config = load_config(config_name, TotalConfig) if config_name else TotalConfig()
 
 
 def render_app() -> gr.Blocks:
@@ -82,32 +81,23 @@ def render_app() -> gr.Blocks:
         delete_cache=(cache_delete_frequency, cache_delete_cutoff),
     ) as app:
         gr.HTML("<h1>Ultimate RVC 🧡</h1>")
-
-        voice_model_names = get_voice_model_names()
         for component_config in [
             total_config.song.one_click.voice_model,
+            total_config.song.one_click.cached_song,
+            total_config.song.one_click.custom_embedder_model,
             total_config.song.multi_step.voice_model,
-            total_config.speech.one_click.voice_model,
-            total_config.speech.multi_step.voice_model,
-        ]:
-            component_config.instantiate(choices=voice_model_names)
-        named_song_dirs = get_named_song_dirs()
-        for component_config in [
+            total_config.song.multi_step.cached_song,
+            total_config.song.multi_step.custom_embedder_model,
             total_config.song.multi_step.song_dirs.separate_audio,
             total_config.song.multi_step.song_dirs.convert_vocals,
             total_config.song.multi_step.song_dirs.postprocess_vocals,
             total_config.song.multi_step.song_dirs.pitch_shift_background,
             total_config.song.multi_step.song_dirs.mix,
-        ]:
-            component_config.instantiate(choices=named_song_dirs)
-        for component_config in [
-            total_config.song.one_click.cached_song,
-            total_config.song.one_click.custom_embedder_model,
-            total_config.song.multi_step.cached_song,
-            total_config.song.multi_step.custom_embedder_model,
             total_config.speech.one_click.edge_tts_voice,
+            total_config.speech.one_click.voice_model,
             total_config.speech.one_click.custom_embedder_model,
             total_config.speech.multi_step.edge_tts_voice,
+            total_config.speech.multi_step.voice_model,
             total_config.speech.multi_step.custom_embedder_model,
             total_config.training.multi_step.dataset,
             total_config.training.multi_step.preprocess_model,
@@ -123,8 +113,10 @@ def render_app() -> gr.Blocks:
             total_config.management.model.embedders,
             total_config.management.model.pretraineds,
             total_config.management.model.traineds,
+            total_config.management.settings.load_config_name,
+            total_config.management.settings.delete_config_names,
         ]:
-            component_config.instantiate(use_gradio_default=True)
+            component_config.instantiate()
         # main tab
         with gr.Tab("Generate song covers"):
             render_song_cover_one_click_tab(total_config, cookiefile)
@@ -142,7 +134,7 @@ def render_app() -> gr.Blocks:
             render_settings_tab(total_config)
 
         app.load(
-            _init_app,
+            _init_dropdowns,
             outputs=[
                 total_config.speech.one_click.edge_tts_voice.instance,
                 total_config.speech.multi_step.edge_tts_voice.instance,
@@ -159,98 +151,91 @@ def render_app() -> gr.Blocks:
                 total_config.management.model.embedders.instance,
                 total_config.training.multi_step.custom_pretrained_model.instance,
                 total_config.management.model.pretraineds.instance,
-                total_config.training.multi_step.preprocess_model.instance,
                 total_config.training.multi_step.extract_model.instance,
                 total_config.training.multi_step.train_model.instance,
+                total_config.training.multi_step.preprocess_model.instance,
                 total_config.management.model.traineds.instance,
                 total_config.song.one_click.cached_song.instance,
                 total_config.song.multi_step.cached_song.instance,
-                total_config.management.audio.intermediate.instance,
                 total_config.song.multi_step.song_dirs.separate_audio.instance,
                 total_config.song.multi_step.song_dirs.convert_vocals.instance,
                 total_config.song.multi_step.song_dirs.postprocess_vocals.instance,
                 total_config.song.multi_step.song_dirs.pitch_shift_background.instance,
                 total_config.song.multi_step.song_dirs.mix.instance,
+                total_config.management.audio.intermediate.instance,
                 total_config.training.multi_step.dataset.instance,
                 total_config.management.audio.speech.instance,
                 total_config.management.audio.output.instance,
                 total_config.management.audio.dataset.instance,
+                total_config.management.settings.load_config_name.instance,
+                total_config.management.settings.delete_config_names.instance,
             ],
             show_progress="hidden",
         )
     return app
 
 
-def _init_app() -> list[gr.Dropdown]:
+def _init_dropdowns() -> list[gr.Dropdown]:
     """
     Initialize the Ultimate RVC web application by updating the choices
-    of all dropdown components.
+    and default values of non-static dropdown components.
 
     Returns
     -------
     tuple[gr.Dropdown, ...]
-        Updated dropdowns for selecting models and audio files.
+        A tuple of gr.Dropdown components with updated choices and
+        default values.
 
     """
     # Initialize model dropdowns
-    tts_voice_names = get_edge_tts_voice_names()
-    christopher_voice = "en-US-ChristopherNeural"
-    default_voice_name = (
-        christopher_voice
-        if christopher_voice in tts_voice_names
-        else next(iter(tts_voice_names), None)
+    edge_tts_models = initialize_dropdowns(
+        get_edge_tts_voice_names,
+        2,
+        "en-US-ChristopherNeural",
+        range(2),
     )
-    edge_tts_voice_1click, edge_tts_voice_multi = [
-        gr.Dropdown(choices=tts_voice_names, value=default_voice_name) for _ in range(2)
-    ]
-    voice_model_names = get_voice_model_names()
-    voice_models = [
-        gr.Dropdown(
-            choices=voice_model_names,
-            value=next(iter(voice_model_names), None),
-        )
-        for _ in range(4)
-    ]
-    voice_model_delete = gr.Dropdown(choices=voice_model_names)
-    custom_embedder_models = [
-        gr.Dropdown(choices=get_custom_embedder_model_names()) for _ in range(6)
-    ]
-
-    custom_pretrained_models = [
-        gr.Dropdown(choices=get_custom_pretrained_model_names()) for _ in range(2)
-    ]
-    training_models = [
-        gr.Dropdown(choices=get_training_model_names()) for _ in range(4)
-    ]
-
-    # Initialize audio dropdowns
-    named_song_dirs = get_named_song_dirs()
-    cached_songs = [gr.Dropdown(choices=named_song_dirs) for _ in range(3)]
-    song_dirs = [
-        gr.Dropdown(
-            choices=named_song_dirs,
-            value=None if not named_song_dirs else named_song_dirs[0][1],
-        )
-        for _ in range(5)
-    ]
-    dataset = gr.Dropdown(choices=get_audio_datasets())
-    speech_delete = gr.Dropdown(choices=get_saved_speech_audio())
-    output_delete = gr.Dropdown(choices=get_saved_output_audio())
-    dataset_delete = gr.Dropdown(choices=get_named_audio_datasets())
+    voice_models = initialize_dropdowns(
+        get_voice_model_names,
+        5,
+        value_indices=range(4),
+    )
+    custom_embedder_models = initialize_dropdowns(
+        get_custom_embedder_model_names,
+        6,
+        value_indices=range(5),
+    )
+    custom_pretrained_models = initialize_dropdowns(
+        get_custom_pretrained_model_names,
+        2,
+        value_indices=range(1),
+    )
+    training_models = initialize_dropdowns(
+        get_training_model_names,
+        4,
+        value_indices=range(2),
+    )
+    song_dirs = initialize_dropdowns(
+        get_named_song_dirs,
+        8,
+        value_indices=range(7),
+    )
+    dataset = gr.Dropdown(get_audio_datasets())
+    speech_delete = gr.Dropdown(get_saved_speech_audio())
+    output_delete = gr.Dropdown(get_saved_output_audio())
+    dataset_delete = gr.Dropdown(get_named_audio_datasets())
+    configs = initialize_dropdowns(get_config_names, 2, value_indices=range(1))
     return [
-        edge_tts_voice_1click,
-        edge_tts_voice_multi,
+        *edge_tts_models,
         *voice_models,
-        voice_model_delete,
         *custom_embedder_models,
         *custom_pretrained_models,
         *training_models,
-        *cached_songs,
         *song_dirs,
         dataset,
         speech_delete,
         output_delete,
         dataset_delete,
+        *configs,
     ]
 
 
