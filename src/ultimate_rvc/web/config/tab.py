@@ -132,7 +132,7 @@ class GenerationConfig(BaseTabConfig):
         label="RMS mix rate",
         info=(
             "How much to mimic the loudness (0) of the input voice or a fixed loudness"
-            " (1). A value of 0.25 is recommended for most cases."
+            " (1). A value of 0.25 is recommended for most cases.<br><br>"
         ),
         value=0.25,
         minimum=0.0,
@@ -143,7 +143,7 @@ class GenerationConfig(BaseTabConfig):
         info=(
             "Controls the extent to which consonants and breathing sounds are protected"
             " from artifacts. A higher value offers more protection but may worsen the"
-            " indexing effect."
+            " indexing effect.<br><br>"
         ),
         value=0.33,
         minimum=0.0,

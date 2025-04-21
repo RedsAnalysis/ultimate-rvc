@@ -1,4 +1,4 @@
-"""Module which defines the code for the "Manage models" tab."""
+"""Module which defines the code for the "Models" tab."""
 
 from __future__ import annotations
 
@@ -43,6 +43,9 @@ from ultimate_rvc.web.common import (
     update_dropdowns,
 )
 from ultimate_rvc.web.config.event import ManageModelEventState
+from ultimate_rvc.web.tabs.train.multi_step_generation import (
+    render as _render_train_multi_step_tab,
+)
 
 if TYPE_CHECKING:
 
@@ -52,7 +55,7 @@ if TYPE_CHECKING:
 def render(total_config: TotalConfig) -> None:
     """
 
-    Render "Manage models" tab.
+    Render "Models" tab.
 
     Parameters
     ----------
@@ -67,6 +70,8 @@ def render(total_config: TotalConfig) -> None:
 
     _render_download_tab(event_state)
     _render_upload_tab(event_state)
+    with gr.Tab("Train", elem_id="train-tab"):
+        _render_train_multi_step_tab(total_config)
     _render_delete_tab(tab_config, event_state)
 
     *_, all_model_update = [
@@ -146,20 +151,19 @@ def render(total_config: TotalConfig) -> None:
 
 
 def _render_download_tab(event_state: ManageModelEventState) -> None:
-    with gr.Tab("Download models"):
+    with gr.Tab("Download"):
         with gr.Accordion("Voice models"):
             with gr.Accordion("View public models table", open=False):
-                gr.Markdown("")
-                gr.Markdown("*HOW TO USE*")
-                gr.Markdown(
-                    "- Filter voice models by selecting one or more tags and/or"
-                    " providing a search query.",
-                )
-                gr.Markdown(
-                    "- Select a row in the table to autofill the name and URL for the"
-                    " given voice model in the form fields below.",
-                )
-                gr.Markdown("")
+                with gr.Accordion("HOW TO USE", open=False):
+                    gr.Markdown("")
+                    gr.Markdown(
+                        "- Filter voice models by selecting one or more tags and/or"
+                        " providing a search query.",
+                    )
+                    gr.Markdown(
+                        "- Select a row in the table to autofill the name and URL for"
+                        " the given voice model in the form fields below.",
+                    )
                 with gr.Row():
                     search_query = gr.Textbox(label="Search query")
                     tags = gr.CheckboxGroup(
@@ -281,9 +285,9 @@ def _render_download_tab(event_state: ManageModelEventState) -> None:
 
 
 def _render_upload_tab(event_state: ManageModelEventState) -> None:
-    with gr.Tab("Upload models"):
+    with gr.Tab("Upload"):
         with gr.Accordion("Voice models", open=True):
-            with gr.Accordion("HOW TO USE"):
+            with gr.Accordion("HOW TO USE", open=False):
                 gr.Markdown("")
                 gr.Markdown(
                     "1. Find the .pth file for a locally trained RVC model (e.g. in"
@@ -323,7 +327,7 @@ def _render_upload_tab(event_state: ManageModelEventState) -> None:
                     show_progress="hidden",
                 )
         with gr.Accordion("Custom embedder models", open=False):
-            with gr.Accordion("HOW TO USE"):
+            with gr.Accordion("HOW TO USE", open=False):
                 gr.Markdown("")
                 gr.Markdown(
                     "1. Find the config.json file and pytorch_model.bin file for a"
@@ -371,7 +375,7 @@ def _render_delete_tab(
     event_state: ManageModelEventState,
 ) -> None:
 
-    with gr.Tab("Delete models"):
+    with gr.Tab("Delete"):
         _render_voices_accordion(tab_config, event_state)
         _render_embedders_accordion(tab_config, event_state)
         _render_pretraineds_accordion(tab_config, event_state)

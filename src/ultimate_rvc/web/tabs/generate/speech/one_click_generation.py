@@ -45,12 +45,13 @@ def render(total_config: TotalConfig) -> None:
 
     """
     tab_config = total_config.speech.one_click
-    with gr.Tab("One-click generation"):
-        _render_main_options(tab_config)
-        _render_tts_options(tab_config)
-        _render_conversion_options(tab_config)
-        _render_output_options(tab_config)
-        _render_intermediate_audio(tab_config)
+    with gr.Tab("One-click"):
+        _render_input(tab_config)
+        with gr.Accordion("Options", open=False):
+            _render_tts_options(tab_config)
+            _render_conversion_options(tab_config)
+            _render_output_options(tab_config)
+            _render_intermediate_audio(tab_config)
 
         with gr.Row(equal_height=True):
             reset_btn = gr.Button(value="Reeset settings", scale=2)
@@ -154,51 +155,49 @@ def render(total_config: TotalConfig) -> None:
         )
 
 
-def _render_main_options(tab_config: OneClickSpeechGenerationConfig) -> None:
-    with gr.Accordion("Main options"):
-        with gr.Row():
-            with gr.Column():
-                tab_config.source_type.instantiate()
-            with gr.Column():
-                tab_config.source.instantiate()
-                local_file = gr.File(
-                    label="Source",
-                    file_types=[".txt"],
-                    file_count="single",
-                    type="filepath",
-                    visible=False,
-                )
-            tab_config.source_type.instance.input(
-                partial(toggle_visible_component, 2),
-                inputs=tab_config.source_type.instance,
-                outputs=[tab_config.source.instance, local_file],
-                show_progress="hidden",
+def _render_input(tab_config: OneClickSpeechGenerationConfig) -> None:
+    with gr.Row():
+        with gr.Column():
+            tab_config.source_type.instantiate()
+        with gr.Column():
+            tab_config.source.instantiate()
+            local_file = gr.File(
+                label="Source",
+                file_types=[".txt"],
+                file_count="single",
+                type="filepath",
+                visible=False,
             )
-            local_file.change(
-                update_value,
-                inputs=local_file,
-                outputs=tab_config.source.instance,
-                show_progress="hidden",
-            )
-        with gr.Row():
-            tab_config.edge_tts_voice.instance.render()
-            tab_config.voice_model.instance.render()
+        tab_config.source_type.instance.input(
+            partial(toggle_visible_component, 2),
+            inputs=tab_config.source_type.instance,
+            outputs=[tab_config.source.instance, local_file],
+            show_progress="hidden",
+        )
+        local_file.change(
+            update_value,
+            inputs=local_file,
+            outputs=tab_config.source.instance,
+            show_progress="hidden",
+        )
+    with gr.Row():
+        tab_config.edge_tts_voice.instance.render()
+        tab_config.voice_model.instance.render()
 
 
 def _render_tts_options(tab_config: OneClickSpeechGenerationConfig) -> None:
-    with gr.Accordion("Edge TTS options", open=False), gr.Row():
+    with gr.Accordion("Edge TTS", open=False), gr.Row():
         tab_config.tts_pitch_shift.instantiate()
         tab_config.tts_speed_change.instantiate()
         tab_config.tts_volume_change.instantiate()
 
 
 def _render_conversion_options(tab_config: OneClickSpeechGenerationConfig) -> None:
-    with gr.Accordion("Speech conversion options", open=False):
-        gr.Markdown("")
-        with gr.Accordion("Main settings", open=True), gr.Row():
+    with gr.Accordion("Speech conversion", open=False):
+        with gr.Row():
             tab_config.n_octaves.instantiate()
             tab_config.n_semitones.instantiate()
-        with gr.Accordion("Voice synthesis settings", open=False):
+        with gr.Accordion("Voice synthesis", open=False):
             with gr.Row():
                 tab_config.f0_methods.instantiate()
                 tab_config.index_rate.instantiate()
@@ -206,7 +205,7 @@ def _render_conversion_options(tab_config: OneClickSpeechGenerationConfig) -> No
                 tab_config.rms_mix_rate.instantiate()
                 tab_config.protect_rate.instantiate()
                 tab_config.hop_length.instantiate()
-        with gr.Accordion("Speech enrichment settings", open=False), gr.Row():
+        with gr.Accordion("Speech enrichment", open=False), gr.Row():
             with gr.Column():
                 tab_config.split_voice.instantiate()
             with gr.Column():
@@ -227,7 +226,7 @@ def _render_conversion_options(tab_config: OneClickSpeechGenerationConfig) -> No
             outputs=tab_config.clean_strength.instance,
             show_progress="hidden",
         )
-        with gr.Accordion("Speaker embedding settings", open=False), gr.Row():
+        with gr.Accordion("Speaker embedding", open=False), gr.Row():
             with gr.Column():
                 tab_config.embedder_model.instantiate()
                 tab_config.custom_embedder_model.instance.render()
@@ -241,7 +240,7 @@ def _render_conversion_options(tab_config: OneClickSpeechGenerationConfig) -> No
 
 
 def _render_output_options(tab_config: OneClickSpeechGenerationConfig) -> None:
-    with gr.Accordion("Audio output options", open=False):
+    with gr.Accordion("Audio output", open=False):
         with gr.Row():
             tab_config.output_gain.instantiate()
             tab_config.output_sr.instantiate()

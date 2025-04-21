@@ -93,19 +93,19 @@ When developing new features or debugging, it is recommended to run the app in d
 
 ![ ](images/webui_dl_model.png?raw=true)
 
-Navigate to the `Download models` subtab under the `Manage models` tab, and paste the download link to an RVC model and give it a unique name.
+Navigate to the `Download` subtab under the `Models` tab, and paste the download link to an RVC model and give it a unique name.
 You may search the [AI Hub Discord](https://discord.gg/aihub) where already trained voice models are available for download.
 The downloaded zip file should contain the .pth model file and optionally also a .index file.
 
-Once the two input fields are filled in, simply click `Download`. Once the output message says `[NAME] Model successfully downloaded!`, you should be able to use the downloaded model in either the `Generate song covers` or `Generate speech` tab.
+Once the two input fields are filled in, simply click `Download`. Once the output message says `[NAME] Model successfully downloaded!`, you should be able to use the downloaded model in either the `Generate`>`song covers` or `Generate`>`speech` tab.
 
 #### Upload models
 
 ![ ](images/webui_upload_model.png?raw=true)
 
 For people who have trained RVC models locally and would like to use them for voice conversion.
-Navigate to the `Upload models` subtab under the `Manage models` tab, and follow the instructions there.
-Once the output message says `Model with name [NAME] successfully uploaded!`, you should be able to use the uploaded model in eiter the `Generate song covers` or `Generate speech` tab.
+Navigate to the `Upload` subtab under the `Models` tab, and follow the instructions there.
+Once the output message says `Model with name [NAME] successfully uploaded!`, you should be able to use the uploaded model in either the `Generate`>`song covers` or `Generate`>`speech` tab.
 
 ### Generate song covers
 
@@ -116,8 +116,7 @@ Once the output message says `Model with name [NAME] successfully uploaded!`, yo
 * From the `Source type` dropdown, choose the source type from which you want to retrieve the song to convert.
 * In the `Source` input field either paste the URL of a song on YouTube or upload an audio file, depending on the source type selected.
 * From the `Voice model` dropdown menu, select the voice model to use.
-* Pitch should be set to either -12, 0, or 12 depending on the vocals in the provided source and the provided voice model. This ensures the voice is not *out of tune*.
-* Other advanced options for vocal conversion, audio mixing and etc. can be viewed by clicking the appropriate accordion in UI.
+* More Options can be viewed by clicking `Options`.
 
 Once all options are filled in, click `Generate` and the AI generated song cover should appear in less than a few minutes, depending on your GPU.
 
