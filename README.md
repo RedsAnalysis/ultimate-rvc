@@ -61,7 +61,7 @@ cd ultimate-rvc
 ./urvc install 
 ```
 
-Note that on Linux, this command will install the CUDA 12.5 toolkit system-wide, if it is not already available. In case you have problems, you may need to install the toolkit manually.
+Note that on Linux, this command will install the CUDA 12.8 toolkit system-wide, if it is not already available. In case you have problems, you may need to install the toolkit manually.
 
 ### Start the app
 
@@ -126,10 +126,10 @@ The Ultimate RVC project is also available as a [distributable package](https://
 
 ### Installation
 
-The package can be installed with pip in a **Python 3.12**-based environment. To do so requires first installing PyTorch with Cuda support:
+The package can be installed with pip in a **Python 3.12**-based environment. To do so requires first installing PyTorch with CUDA support:
 
 ```console
-pip install torch==2.6.0+cu124 torchaudio==2.6.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+pip install torch==2.7.0+cu128 torchaudio==2.7.0+cu128 --index-url https://download.pytorch.org/whl/cu128
 ```
 
 The Ultimate RVC project package can then be installed as follows:

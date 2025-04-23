@@ -56,7 +56,7 @@ def render(total_config: TotalConfig) -> None:
         with gr.Row(equal_height=True):
             reset_btn = gr.Button(value="Reeset settings", scale=2)
             generate_btn = gr.Button(value="Generate", scale=2, variant="primary")
-            mixed_speech = gr.Audio(label="Mixed speech", scale=3)
+        mixed_speech = gr.Audio(label="Mixed speech", scale=3)
         generate_btn.click(
             partial(
                 exception_harness(
