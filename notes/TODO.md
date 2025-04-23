@@ -8,7 +8,14 @@
   * We no longer have a "management concept" instead audio, models, settings and generate should have their own modules/packages
   * train should be a sub-package of model
   * We should also update the layout under web/config so that the nested pydantic models represent the new tab layout
-
+* setup discord server
+* setup discussions forum on repo
+* add support me/by me coffee section on readme
+* add an acknowledgements section to readme
+* move the show intermediate audio checkbox out to the outermost level of the options accordion
+* add option for web ui to load with a specific theme given as a string. 
+* make song_dir nullable so that when it is not added explicitly in multi-step tab then a new unique song dir is created
+  * this way we can also hide away the song directory dropdown under options sub accordion.
 * We need to make a new custom theme for the ui where
   * shading on nested accordion is better to differentiate the accordions
   * miku avatar is not included
