@@ -1,5 +1,7 @@
 # TODO
 
+* test if app is more slow after doing UI refactoring (compare with commit from before)
+  * If UI was also slow before might need to rethink what we can do to make it more responsive
 * fix configuration saving/loading so that visibility status can also be saved and loaded
   * this needs to be done statically: when defining a configuration component there should be an optional children field which denotes the children of the component that will be unfolded, i.e. shouldb become visible. There hsould also (perhaps on the same field) be a defined value for which the child components should be visible. Then during the saving of new component values, we will do a check where we see if a given component has any children. if so and if the new component value is equal to the value for which the children should become visible, then we set the visibility field on the children to true. 
   * When this has been implemented we can finally have all the components with children be included rather than excluded from saving and loading as is the case now (and of course the visiblity of their children will be saved too)
@@ -393,7 +395,7 @@
 ### general
 
 * fix problem with not being able to rename default "Options" panel in typer [DIFFICULT TO IMPLEMENT]
-  * the panel where "help" and other built in options are put 
+  * the panel where "help" and other built in options are put
   * seems to not be possible with typer so report?
 
 ### Add remaining CLI interfaces
@@ -405,7 +407,6 @@
 ## python package management
 
 * add support for python 3.13.
-* update numpy to latest
 * need to wait for uv to make it easy to install package with torch dependency [DIFFICULT TO IMPLEMENT]
   * also it is still necessary to install pytorch first as it is not on pypi index
 
