@@ -54,7 +54,7 @@ def render(total_config: TotalConfig) -> None:
     tab_config = total_config.speech.multi_step
     for c in tab_config.input_audio.all:
         c.instantiate()
-    with gr.Tab("Multi-step generation"):
+    with gr.Tab("Multi-step"):
         _render_step_1(total_config)
         _render_step_2(total_config)
         _render_step_3(total_config)
@@ -63,8 +63,6 @@ def render(total_config: TotalConfig) -> None:
 def _render_step_1(total_config: TotalConfig) -> None:
     tab_config = total_config.speech.multi_step
     with gr.Accordion("Step 1: Text-to-speech conversion", open=True):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         with gr.Row():
             with gr.Column():
                 tab_config.source_type.instantiate()
@@ -90,26 +88,25 @@ def _render_step_1(total_config: TotalConfig) -> None:
                 show_progress="hidden",
             )
         tab_config.edge_tts_voice.instance.render()
-        gr.Markdown("**Settings**")
+        with gr.Accordion("Options", open=False):
+            with gr.Row():
+                tab_config.tts_pitch_shift.instantiate()
+                tab_config.tts_speed_change.instantiate()
+                tab_config.tts_volume_change.instantiate()
+            speech_transfer = _render_speech_transfer(
+                [SpeechTransferOption.STEP_2_SPEECH],
+                "Speech",
+            )
         with gr.Row():
-            tab_config.tts_pitch_shift.instantiate()
-            tab_config.tts_speed_change.instantiate()
-            tab_config.tts_volume_change.instantiate()
-        speech_transfer = _render_speech_transfer(
-            [SpeechTransferOption.STEP_2_SPEECH],
-            "Speech",
-        )
+            tts_reset_btn = gr.Button("Reset settings")
+            tts_btn = gr.Button("Convert text", variant="primary")
+        tts_transfer_btn = gr.Button("Transfer speech")
 
-        gr.Markdown("**Outputs**")
         speech_track_output = gr.Audio(
             label="Generated speech",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        tts_btn = gr.Button("Convert text", variant="primary")
-        tts_transfer_btn = gr.Button("Transfer speech")
-        tts_reset_btn = gr.Button("Reset settings")
         tts_reset_btn.click(
             lambda: [
                 tab_config.tts_pitch_shift.value,
@@ -152,69 +149,67 @@ def _render_step_2(total_config: TotalConfig) -> None:
     tab_config = total_config.speech.multi_step
 
     with gr.Accordion("Step 2: speech conversion", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         tab_config.input_audio.speech.instance.render()
         tab_config.voice_model.instance.render()
-        gr.Markdown("**Settings**")
-        with gr.Accordion("Main settings", open=True), gr.Row():
-            tab_config.n_octaves.instantiate()
-            tab_config.n_semitones.instantiate()
-        with gr.Accordion("Voice synthesis settings", open=False):
+        with gr.Accordion("Options", open=False):
             with gr.Row():
-                tab_config.f0_methods.instantiate()
-                tab_config.index_rate.instantiate()
-            with gr.Row():
-                tab_config.rms_mix_rate.instantiate()
-                tab_config.protect_rate.instantiate()
-                tab_config.hop_length.instantiate()
-        with gr.Accordion("Speech enrichment settings", open=False), gr.Row():
-            with gr.Column():
-                tab_config.split_voice.instantiate()
-            with gr.Column():
-                tab_config.autotune_voice.instantiate()
-                tab_config.autotune_strength.instantiate()
-            with gr.Column():
-                tab_config.clean_voice.instantiate()
-                tab_config.clean_strength.instantiate()
-        tab_config.autotune_voice.instance.change(
-            partial(toggle_visibility, targets={True}),
-            inputs=tab_config.autotune_voice.instance,
-            outputs=tab_config.autotune_strength.instance,
-            show_progress="hidden",
-        )
-        tab_config.clean_voice.instance.change(
-            partial(toggle_visibility, targets={True}),
-            inputs=tab_config.clean_voice.instance,
-            outputs=tab_config.clean_strength.instance,
-            show_progress="hidden",
-        )
-        with gr.Accordion("Speaker embedding settings", open=False), gr.Row():
-            with gr.Column():
-                tab_config.embedder_model.instantiate()
-                tab_config.custom_embedder_model.instance.render()
-            tab_config.sid.instantiate()
-        tab_config.embedder_model.instance.change(
-            partial(toggle_visibility, targets={EmbedderModel.CUSTOM}),
-            inputs=tab_config.embedder_model.instance,
-            outputs=tab_config.custom_embedder_model.instance,
-            show_progress="hidden",
-        )
-        converted_speech_transfer = _render_speech_transfer(
-            [SpeechTransferOption.STEP_3_SPEECH],
-            "Converted speech",
-        )
-        gr.Markdown("**Outputs**")
+                tab_config.n_octaves.instantiate()
+                tab_config.n_semitones.instantiate()
+            with gr.Accordion("Voice synthesis settings", open=False):
+                with gr.Row():
+                    tab_config.f0_methods.instantiate()
+                    tab_config.index_rate.instantiate()
+                with gr.Row():
+                    tab_config.rms_mix_rate.instantiate()
+                    tab_config.protect_rate.instantiate()
+                    tab_config.hop_length.instantiate()
+            with gr.Accordion("Speech enrichment settings", open=False), gr.Row():
+                with gr.Column():
+                    tab_config.split_voice.instantiate()
+                with gr.Column():
+                    tab_config.autotune_voice.instantiate()
+                    tab_config.autotune_strength.instantiate()
+                with gr.Column():
+                    tab_config.clean_voice.instantiate()
+                    tab_config.clean_strength.instantiate()
+            tab_config.autotune_voice.instance.change(
+                partial(toggle_visibility, targets={True}),
+                inputs=tab_config.autotune_voice.instance,
+                outputs=tab_config.autotune_strength.instance,
+                show_progress="hidden",
+            )
+            tab_config.clean_voice.instance.change(
+                partial(toggle_visibility, targets={True}),
+                inputs=tab_config.clean_voice.instance,
+                outputs=tab_config.clean_strength.instance,
+                show_progress="hidden",
+            )
+            with gr.Accordion("Speaker embedding settings", open=False), gr.Row():
+                with gr.Column():
+                    tab_config.embedder_model.instantiate()
+                    tab_config.custom_embedder_model.instance.render()
+                tab_config.sid.instantiate()
+            tab_config.embedder_model.instance.change(
+                partial(toggle_visibility, targets={EmbedderModel.CUSTOM}),
+                inputs=tab_config.embedder_model.instance,
+                outputs=tab_config.custom_embedder_model.instance,
+                show_progress="hidden",
+            )
+            converted_speech_transfer = _render_speech_transfer(
+                [SpeechTransferOption.STEP_3_SPEECH],
+                "Converted speech",
+            )
+        with gr.Row():
+
+            convert_speech_reset_btn = gr.Button("Reset settings")
+            convert_speech_btn = gr.Button("Convert speech", variant="primary")
+        converted_speech_transfer_btn = gr.Button("Transfer converted speech")
+
         converted_speech_track_output = gr.Audio(
             label="Converted speech",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        convert_speech_btn = gr.Button("Convert speech", variant="primary")
-        converted_speech_transfer_btn = gr.Button("Transfer converted speech")
-        convert_speech_reset_btn = gr.Button("Reset settings")
-
         convert_speech_reset_btn.click(
             lambda: [
                 tab_config.n_octaves.value,
@@ -298,38 +293,35 @@ def _render_step_2(total_config: TotalConfig) -> None:
 def _render_step_3(total_config: TotalConfig) -> None:
     tab_config = total_config.speech.multi_step
     with gr.Accordion("Step 3: speech mixing", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         tab_config.input_audio.converted_speech.instance.render()
-        gr.Markdown("**Settings**")
+        with gr.Accordion("Options", open=False):
+            with gr.Row():
+                tab_config.output_gain.instantiate()
+                tab_config.output_sr.instantiate()
+            with gr.Row():
+                tab_config.output_name.instantiate(
+                    value=partial(
+                        update_output_name,
+                        get_mixed_speech_track_name,
+                        False,  # noqa: FBT003,,
+                    ),
+                    inputs=[
+                        gr.State(None),
+                        gr.State(None),
+                        tab_config.input_audio.converted_speech.instance,
+                    ],
+                )
+                tab_config.output_format.instantiate()
+            mixed_speech_transfer = _render_speech_transfer([], "Mixed speech")
         with gr.Row():
-            tab_config.output_gain.instantiate()
-            tab_config.output_sr.instantiate()
-        with gr.Row():
-            tab_config.output_name.instantiate(
-                value=partial(
-                    update_output_name,
-                    get_mixed_speech_track_name,
-                    False,  # noqa: FBT003,,
-                ),
-                inputs=[
-                    gr.State(None),
-                    gr.State(None),
-                    tab_config.input_audio.converted_speech.instance,
-                ],
-            )
-            tab_config.output_format.instantiate()
-        mixed_speech_transfer = _render_speech_transfer([], "Mixed speech")
-        gr.Markdown("**Outputs**")
+            mix_speech_btn = gr.Button("Mix speech", variant="primary")
+            mix_speech_transfer_btn = gr.Button("Transfer mixed speech")
+        mix_speech_reset_btn = gr.Button("Reset settings")
         mixed_speech_track_output = gr.Audio(
             label="Mixed speech",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        mix_speech_btn = gr.Button("Mix speech", variant="primary")
-        mix_speech_transfer_btn = gr.Button("Transfer mixed speech")
-        mix_speech_reset_btn = gr.Button("Reset settings")
 
         mix_speech_reset_btn.click(
             lambda: [

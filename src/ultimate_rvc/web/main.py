@@ -47,12 +47,9 @@ from ultimate_rvc.web.tabs.generate.speech.multi_step_generation import (
 from ultimate_rvc.web.tabs.generate.speech.one_click_generation import (
     render as render_speech_one_click_tab,
 )
-from ultimate_rvc.web.tabs.manage.audio import render as render_manage_audio_tab
-from ultimate_rvc.web.tabs.manage.models import render as render_manage_models_tab
+from ultimate_rvc.web.tabs.manage.audio import render as render_audio_tab
+from ultimate_rvc.web.tabs.manage.models import render as render_models_tab
 from ultimate_rvc.web.tabs.manage.settings import render as render_settings_tab
-from ultimate_rvc.web.tabs.train.multi_step_generation import (
-    render as render_train_multi_step_tab,
-)
 
 config_name = os.environ.get("URVC_CONFIG")
 cookiefile = os.environ.get("YT_COOKIEFILE")
@@ -71,16 +68,22 @@ def render_app() -> gr.Blocks:
     """
     css = """
     h1 { text-align: center; margin-top: 20px; margin-bottom: 20px; }
+
+    #generate-tab-button { font-weight: bold !important;}
+    #manage-tab-button { font-weight: bold !important;}
+    #audio-tab-button { font-weight: bold !important;}
+    #settings-tab-button { font-weight: bold !important;}
     """
     cache_delete_frequency = 86400  # every 24 hours check for files to delete
     cache_delete_cutoff = 86400  # and delete files older than 24 hours
 
     with gr.Blocks(
         title="Ultimate RVC",
+        theme="NoCrypt/miku",
         css=css,
         delete_cache=(cache_delete_frequency, cache_delete_cutoff),
     ) as app:
-        gr.HTML("<h1>Ultimate RVC 🧡</h1>")
+        gr.HTML("<h1>Ultimate RVC 💙</h1>")
         for component_config in [
             total_config.song.one_click.voice_model,
             total_config.song.one_click.cached_song,
@@ -118,19 +121,18 @@ def render_app() -> gr.Blocks:
         ]:
             component_config.instantiate()
         # main tab
-        with gr.Tab("Generate song covers"):
-            render_song_cover_one_click_tab(total_config, cookiefile)
-            render_song_cover_multi_step_tab(total_config, cookiefile)
-        with gr.Tab("Generate speech"):
-            render_speech_one_click_tab(total_config)
-            render_speech_multi_step_tab(total_config)
-        with gr.Tab("Train voice models"):
-            render_train_multi_step_tab(total_config)
-        with gr.Tab("Manage models"):
-            render_manage_models_tab(total_config)
-        with gr.Tab("Manage audio"):
-            render_manage_audio_tab(total_config)
-        with gr.Tab("Settings"):
+        with gr.Tab("Generate", elem_id="generate-tab"):
+            with gr.Tab("Song covers"):
+                render_song_cover_one_click_tab(total_config, cookiefile)
+                render_song_cover_multi_step_tab(total_config, cookiefile)
+            with gr.Tab("Speech"):
+                render_speech_one_click_tab(total_config)
+                render_speech_multi_step_tab(total_config)
+        with gr.Tab("Models", elem_id="manage-tab"):
+            render_models_tab(total_config)
+        with gr.Tab("Audio", elem_id="audio-tab"):
+            render_audio_tab(total_config)
+        with gr.Tab("Settings", elem_id="settings-tab"):
             render_settings_tab(total_config)
 
         app.load(

@@ -58,7 +58,7 @@ def render(total_config: TotalConfig, cookiefile: str | None = None) -> None:
     tab_config = total_config.song.multi_step
     for input_track in tab_config.input_audio.all:
         input_track.instantiate()
-    with gr.Tab("Multi-step generation"):
+    with gr.Tab("Multi-step"):
         _render_step_0(total_config, cookiefile=cookiefile)
         _render_step_1(tab_config)
         _render_step_2(tab_config)
@@ -73,7 +73,6 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
     current_song_dir = gr.State(None)
     with gr.Accordion("Step 0: song retrieval", open=True):
         gr.Markdown("")
-        gr.Markdown("**Inputs**")
         with gr.Row():
             with gr.Column():
                 tab_config.source_type.instantiate()
@@ -105,14 +104,16 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
                 outputs=tab_config.source.instance,
                 show_progress="hidden",
             )
-        gr.Markdown("**Settings**")
-        song_transfer = _render_song_transfer([SongTransferOption.STEP_1_AUDIO], "Song")
-        gr.Markdown("**Outputs**")
-        song_output = gr.Audio(label="Song", type="filepath", interactive=False)
-        gr.Markdown("**Controls**")
-        retrieve_song_btn = gr.Button("Retrieve song", variant="primary")
+        with gr.Accordion("Options", open=False):
+            song_transfer = _render_song_transfer(
+                [SongTransferOption.STEP_1_AUDIO],
+                "Song",
+            )
+        with gr.Row():
+            retrieve_song_reset_btn = gr.Button("Reset options")
+            retrieve_song_btn = gr.Button("Retrieve song", variant="primary")
         song_transfer_btn = gr.Button("Transfer song")
-        retrieve_song_reset_btn = gr.Button("Reset settings")
+        song_output = gr.Audio(label="Song", type="filepath", interactive=False)
 
         retrieve_song_reset_btn.click(
             lambda: gr.Dropdown(value=[SongTransferOption.STEP_1_AUDIO]),
@@ -161,25 +162,28 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
 
 def _render_step_1(tab_config: MultiStepSongGenerationConfig) -> None:
     with gr.Accordion("Step 1: vocal separation", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         tab_config.input_audio.audio.instance.render()
         tab_config.song_dirs.separate_audio.instance.render()
-        gr.Markdown("**Settings**")
+        with gr.Accordion("Options", open=False):
+            with gr.Row():
+                tab_config.separation_model.instantiate()
+                tab_config.segment_size.instantiate()
+            with gr.Row():
+                primary_stem_transfer = _render_song_transfer(
+                    [SongTransferOption.STEP_2_VOCALS],
+                    "Primary stem",
+                )
+                secondary_stem_transfer = _render_song_transfer(
+                    [SongTransferOption.STEP_4_INSTRUMENTALS],
+                    "Secondary stem",
+                )
         with gr.Row():
-            tab_config.separation_model.instantiate()
-            tab_config.segment_size.instantiate()
+            separate_audio_reset_btn = gr.Button("Reset options")
+            separate_vocals_btn = gr.Button("Separate vocals", variant="primary")
         with gr.Row():
-            primary_stem_transfer = _render_song_transfer(
-                [SongTransferOption.STEP_2_VOCALS],
-                "Primary stem",
-            )
-            secondary_stem_transfer = _render_song_transfer(
-                [SongTransferOption.STEP_4_INSTRUMENTALS],
-                "Secondary stem",
-            )
+            primary_stem_transfer_btn = gr.Button("Transfer primary stem")
+            secondary_stem_transfer_btn = gr.Button("Transfer secondary stem")
 
-        gr.Markdown("**Outputs**")
         with gr.Row():
             primary_stem_output = gr.Audio(
                 label="Primary stem",
@@ -191,12 +195,6 @@ def _render_step_1(tab_config: MultiStepSongGenerationConfig) -> None:
                 type="filepath",
                 interactive=False,
             )
-        gr.Markdown("**Controls**")
-        separate_vocals_btn = gr.Button("Separate vocals", variant="primary")
-        with gr.Row():
-            primary_stem_transfer_btn = gr.Button("Transfer primary stem")
-            secondary_stem_transfer_btn = gr.Button("Transfer secondary stem")
-        separate_audio_reset_btn = gr.Button("Reset settings")
 
         separate_audio_reset_btn.click(
             lambda: [
@@ -246,71 +244,68 @@ def _render_step_1(tab_config: MultiStepSongGenerationConfig) -> None:
 
 def _render_step_2(tab_config: MultiStepSongGenerationConfig) -> None:
     with gr.Accordion("Step 2: vocal conversion", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         tab_config.input_audio.vocals.instance.render()
-        with gr.Row():
-            tab_config.song_dirs.convert_vocals.instance.render()
-            tab_config.voice_model.instance.render()
-        gr.Markdown("**Settings**")
-        with gr.Row():
-            tab_config.n_octaves.instantiate()
-            tab_config.n_semitones.instantiate()
-        with gr.Accordion("Voice synthesis settings", open=False):
+        tab_config.voice_model.instance.render()
+        tab_config.song_dirs.convert_vocals.instance.render()
+        with gr.Accordion("Options", open=False):
             with gr.Row():
-                tab_config.f0_methods.instantiate()
-                tab_config.index_rate.instantiate()
-            with gr.Row():
-                tab_config.rms_mix_rate.instantiate()
-                tab_config.protect_rate.instantiate()
-                tab_config.hop_length.instantiate()
-        with gr.Accordion("Vocal enrichment settings", open=False), gr.Row():
-            with gr.Column():
-                tab_config.split_voice.instantiate()
-            with gr.Column():
-                tab_config.autotune_voice.instantiate()
-                tab_config.autotune_strength.instantiate()
-            with gr.Column():
-                tab_config.clean_voice.instantiate()
-                tab_config.clean_strength.instantiate()
-        tab_config.autotune_voice.instance.change(
-            partial(toggle_visibility, targets={True}),
-            inputs=tab_config.autotune_voice.instance,
-            outputs=tab_config.autotune_strength.instance,
-            show_progress="hidden",
-        )
-        tab_config.clean_voice.instance.change(
-            partial(toggle_visibility, targets={True}),
-            inputs=tab_config.clean_voice.instance,
-            outputs=tab_config.clean_strength.instance,
-            show_progress="hidden",
-        )
-        with gr.Accordion("Speaker embeddings settings", open=False), gr.Row():
-            with gr.Column():
-                tab_config.embedder_model.instantiate()
-                tab_config.custom_embedder_model.instance.render()
-            tab_config.sid.instantiate()
-        tab_config.embedder_model.instance.change(
-            partial(toggle_visibility, targets={EmbedderModel.CUSTOM}),
-            inputs=tab_config.embedder_model.instance,
-            outputs=tab_config.custom_embedder_model.instance,
-            show_progress="hidden",
-        )
+                tab_config.n_octaves.instantiate()
+                tab_config.n_semitones.instantiate()
 
-        converted_vocals_transfer = _render_song_transfer(
-            [SongTransferOption.STEP_3_VOCALS],
-            "Converted vocals",
-        )
-        gr.Markdown("**Outputs**")
+            converted_vocals_transfer = _render_song_transfer(
+                [SongTransferOption.STEP_3_VOCALS],
+                "Converted vocals",
+            )
+            with gr.Accordion("Advanced", open=False):
+                with gr.Accordion("Voice synthesis", open=False):
+                    with gr.Row():
+                        tab_config.f0_methods.instantiate()
+                        tab_config.index_rate.instantiate()
+                    with gr.Row():
+                        tab_config.rms_mix_rate.instantiate()
+                        tab_config.protect_rate.instantiate()
+                        tab_config.hop_length.instantiate()
+                with gr.Accordion("Vocal enrichment", open=False), gr.Row():
+                    with gr.Column():
+                        tab_config.split_voice.instantiate()
+                    with gr.Column():
+                        tab_config.autotune_voice.instantiate()
+                        tab_config.autotune_strength.instantiate()
+                    with gr.Column():
+                        tab_config.clean_voice.instantiate()
+                        tab_config.clean_strength.instantiate()
+                tab_config.autotune_voice.instance.change(
+                    partial(toggle_visibility, targets={True}),
+                    inputs=tab_config.autotune_voice.instance,
+                    outputs=tab_config.autotune_strength.instance,
+                    show_progress="hidden",
+                )
+                tab_config.clean_voice.instance.change(
+                    partial(toggle_visibility, targets={True}),
+                    inputs=tab_config.clean_voice.instance,
+                    outputs=tab_config.clean_strength.instance,
+                    show_progress="hidden",
+                )
+                with gr.Accordion("Speaker embeddings", open=False), gr.Row():
+                    with gr.Column():
+                        tab_config.embedder_model.instantiate()
+                        tab_config.custom_embedder_model.instance.render()
+                    tab_config.sid.instantiate()
+                tab_config.embedder_model.instance.change(
+                    partial(toggle_visibility, targets={EmbedderModel.CUSTOM}),
+                    inputs=tab_config.embedder_model.instance,
+                    outputs=tab_config.custom_embedder_model.instance,
+                    show_progress="hidden",
+                )
+        with gr.Row():
+            convert_vocals_reset_btn = gr.Button("Reset options")
+            convert_vocals_btn = gr.Button("Convert vocals", variant="primary")
+        converted_vocals_transfer_btn = gr.Button("Transfer converted vocals")
         converted_vocals_track_output = gr.Audio(
             label="Converted vocals",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        convert_vocals_btn = gr.Button("Convert vocals", variant="primary")
-        converted_vocals_transfer_btn = gr.Button("Transfer converted vocals")
-        convert_vocals_reset_btn = gr.Button("Reset settings")
 
         convert_vocals_reset_btn.click(
             lambda: [
@@ -388,32 +383,28 @@ def _render_step_2(tab_config: MultiStepSongGenerationConfig) -> None:
 
 def _render_step_3(tab_config: MultiStepSongGenerationConfig) -> None:
     with gr.Accordion("Step 3: vocal post-processing", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         tab_config.input_audio.converted_vocals.instance.render()
         tab_config.song_dirs.postprocess_vocals.instance.render()
-        gr.Markdown("**Settings**")
-        with gr.Row():
+        with gr.Accordion("Options", open=False):
             tab_config.room_size.instantiate()
+            with gr.Row():
+                tab_config.wet_level.instantiate()
+                tab_config.dry_level.instantiate()
+                tab_config.damping.instantiate()
+            effected_vocals_transfer = _render_song_transfer(
+                [SongTransferOption.STEP_5_MAIN_VOCALS],
+                "Effected vocals",
+            )
         with gr.Row():
-            tab_config.wet_level.instantiate()
-            tab_config.dry_level.instantiate()
-            tab_config.damping.instantiate()
-        effected_vocals_transfer = _render_song_transfer(
-            [SongTransferOption.STEP_5_MAIN_VOCALS],
-            "Effected vocals",
-        )
-        gr.Markdown("**Outputs**")
+            postprocess_vocals_reset_btn = gr.Button("Reset options")
+            postprocess_vocals_btn = gr.Button("Post-process vocals", variant="primary")
+        effected_vocals_transfer_btn = gr.Button("Transfer effected vocals")
 
         effected_vocals_track_output = gr.Audio(
             label="Effected vocals",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        postprocess_vocals_btn = gr.Button("Post-process vocals", variant="primary")
-        effected_vocals_transfer_btn = gr.Button("Transfer effected vocals")
-        postprocess_vocals_reset_btn = gr.Button("Reset settings")
 
         postprocess_vocals_reset_btn.click(
             lambda: [
@@ -457,17 +448,14 @@ def _render_step_3(tab_config: MultiStepSongGenerationConfig) -> None:
 
 def _render_step_4(tab_config: MultiStepSongGenerationConfig) -> None:
     with gr.Accordion("Step 4: pitch shift of background audio", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         with gr.Row():
             tab_config.input_audio.instrumentals.instance.render()
             tab_config.input_audio.backup_vocals.instance.render()
-        tab_config.song_dirs.pitch_shift_background.instance.render()
-        gr.Markdown("**Settings**")
         with gr.Row():
             tab_config.n_semitones_instrumentals.instantiate()
             tab_config.n_semitones_backup_vocals.instantiate()
-        with gr.Row():
+        tab_config.song_dirs.pitch_shift_background.instance.render()
+        with gr.Accordion("Options", open=False), gr.Row():
             shifted_instrumentals_transfer = _render_song_transfer(
                 [SongTransferOption.STEP_5_INSTRUMENTALS],
                 "Pitch-shifted instrumentals",
@@ -476,20 +464,6 @@ def _render_step_4(tab_config: MultiStepSongGenerationConfig) -> None:
                 [SongTransferOption.STEP_5_BACKUP_VOCALS],
                 "Pitch-shifted backup vocals",
             )
-
-        gr.Markdown("**Outputs**")
-        with gr.Row():
-            shifted_instrumentals_track_output = gr.Audio(
-                label="Pitch-shifted instrumentals",
-                type="filepath",
-                interactive=False,
-            )
-            shifted_backup_vocals_track_output = gr.Audio(
-                label="Pitch-shifted backup vocals",
-                type="filepath",
-                interactive=False,
-            )
-        gr.Markdown("**Controls**")
         with gr.Row():
             pitch_shift_instrumentals_btn = gr.Button(
                 "Pitch shift instrumentals",
@@ -501,12 +475,23 @@ def _render_step_4(tab_config: MultiStepSongGenerationConfig) -> None:
             )
         with gr.Row():
             shifted_instrumentals_transfer_btn = gr.Button(
-                "Transfer pitch-shifted instrumentals",
+                "Transfer shifted instrumentals",
             )
             shifted_backup_vocals_transfer_btn = gr.Button(
-                "Transfer pitch-shifted backup vocals",
+                "Transfer shifted backup vocals",
             )
-        pitch_shift_background_reset_btn = gr.Button("Reset settings")
+        pitch_shift_background_reset_btn = gr.Button("Reset options")
+        with gr.Row():
+            shifted_instrumentals_track_output = gr.Audio(
+                label="Pitch-shifted instrumentals",
+                type="filepath",
+                interactive=False,
+            )
+            shifted_backup_vocals_track_output = gr.Audio(
+                label="Pitch-shifted backup vocals",
+                type="filepath",
+                interactive=False,
+            )
 
         pitch_shift_background_reset_btn.click(
             lambda: [
@@ -572,44 +557,40 @@ def _render_step_5(
     tab_config: MultiStepSongGenerationConfig,
 ) -> None:
     with gr.Accordion("Step 5: song mixing", open=False):
-        gr.Markdown("")
-        gr.Markdown("**Inputs**")
         with gr.Row():
             tab_config.input_audio.main_vocals.instance.render()
             tab_config.input_audio.shifted_instrumentals.instance.render()
             tab_config.input_audio.shifted_backup_vocals.instance.render()
         tab_config.song_dirs.mix.instance.render()
-        gr.Markdown("**Settings**")
+        with gr.Accordion("Options", open=False):
+            with gr.Row():
+                tab_config.main_gain.instantiate()
+                tab_config.inst_gain.instantiate()
+                tab_config.backup_gain.instantiate()
+            with gr.Row():
+                tab_config.output_name.instantiate(
+                    value=partial(
+                        update_output_name,
+                        get_song_cover_name,
+                        False,  # noqa: FBT003,
+                    ),
+                    inputs=[
+                        tab_config.input_audio.main_vocals.instance,
+                        tab_config.song_dirs.mix.instance,
+                    ],
+                )
+                tab_config.output_sr.instantiate()
+                tab_config.output_format.instantiate()
+            song_cover_transfer = _render_song_transfer([], "Song cover")
         with gr.Row():
-            tab_config.main_gain.instantiate()
-            tab_config.inst_gain.instantiate()
-            tab_config.backup_gain.instantiate()
-        with gr.Row():
-            tab_config.output_name.instantiate(
-                value=partial(
-                    update_output_name,
-                    get_song_cover_name,
-                    False,  # noqa: FBT003,
-                ),
-                inputs=[
-                    tab_config.input_audio.main_vocals.instance,
-                    tab_config.song_dirs.mix.instance,
-                ],
-            )
-            tab_config.output_sr.instantiate()
-            tab_config.output_format.instantiate()
-        song_cover_transfer = _render_song_transfer([], "Song cover")
-        gr.Markdown("**Outputs**")
+            mix_reset_btn = gr.Button("Reset options")
+            mix_btn = gr.Button("Mix song cover", variant="primary")
+        song_cover_transfer_btn = gr.Button("Transfer song cover")
         song_cover_output = gr.Audio(
             label="Song cover",
             type="filepath",
             interactive=False,
         )
-        gr.Markdown("**Controls**")
-        mix_btn = gr.Button("Mix song cover", variant="primary")
-        song_cover_transfer_btn = gr.Button("Transfer song cover")
-        mix_reset_btn = gr.Button("Reset settings")
-
         mix_reset_btn.click(
             lambda: [
                 tab_config.main_gain.value,

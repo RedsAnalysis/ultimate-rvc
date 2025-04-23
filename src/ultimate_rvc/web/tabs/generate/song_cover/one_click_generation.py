@@ -49,18 +49,20 @@ def render(total_config: TotalConfig, cookiefile: str | None = None) -> None:
         audio from Youtube.
 
     """
-    with gr.Tab("One-click generation"):
+    with gr.Tab("One-click"):
         tab_config = total_config.song.one_click
-        _render_main_options(tab_config)
-        _render_conversion_options(tab_config)
-        _render_mixing_options(tab_config)
-        _render_output_options(tab_config)
-        _render_intermediate_audio(tab_config)
+        _render_input(tab_config)
+        with gr.Accordion("Options", open=False):
+            _render_main_options(tab_config)
+            _render_conversion_options(tab_config)
+            _render_mixing_options(tab_config)
+            _render_output_options(tab_config)
+            _render_intermediate_audio(tab_config)
 
         with gr.Row(equal_height=True):
-            reset_btn = gr.Button(value="Reset settings", scale=2)
+            reset_btn = gr.Button(value="Reset options", scale=2)
             generate_btn = gr.Button("Generate", scale=2, variant="primary")
-            song_cover = gr.Audio(label="Song cover", scale=3)
+        song_cover = gr.Audio(label="Song cover", scale=3)
         song_dirs = total_config.song.multi_step.song_dirs.all
         generate_btn.click(
             partial(
@@ -174,49 +176,53 @@ def render(total_config: TotalConfig, cookiefile: str | None = None) -> None:
         )
 
 
-def _render_main_options(tab_config: OneClickSongGenerationConfig) -> None:
-    with gr.Accordion("Main options"):
-        with gr.Row():
-            with gr.Column():
-                tab_config.source_type.instantiate()
-            with gr.Column():
-                tab_config.source.instantiate()
-                local_file = gr.Audio(label="Source", type="filepath", visible=False)
-                tab_config.cached_song.instance.render()
-            tab_config.source_type.instance.input(
-                partial(toggle_visible_component, 3),
-                inputs=tab_config.source_type.instance,
-                outputs=[
-                    tab_config.source.instance,
-                    local_file,
-                    tab_config.cached_song.instance,
-                ],
-                show_progress="hidden",
-            )
+def _render_input(tab_config: OneClickSongGenerationConfig) -> None:
+    with gr.Row():
+        with gr.Column():
+            tab_config.source_type.instantiate()
+        with gr.Column():
+            tab_config.source.instantiate()
+            local_file = gr.Audio(label="Source", type="filepath", visible=False)
+            tab_config.cached_song.instance.render()
+        tab_config.source_type.instance.input(
+            partial(toggle_visible_component, 3),
+            inputs=tab_config.source_type.instance,
+            outputs=[
+                tab_config.source.instance,
+                local_file,
+                tab_config.cached_song.instance,
+            ],
+            show_progress="hidden",
+        )
 
-            local_file.change(
-                update_value,
-                inputs=local_file,
-                outputs=tab_config.source.instance,
-                show_progress="hidden",
-            )
-            tab_config.cached_song.instance.input(
-                update_value,
-                inputs=tab_config.cached_song.instance,
-                outputs=tab_config.source.instance,
-                show_progress="hidden",
-            )
-        with gr.Row():
-            tab_config.voice_model.instance.render()
-            tab_config.n_octaves.instantiate()
-            tab_config.n_semitones.instantiate()
+        local_file.change(
+            update_value,
+            inputs=local_file,
+            outputs=tab_config.source.instance,
+            show_progress="hidden",
+        )
+        tab_config.cached_song.instance.input(
+            update_value,
+            inputs=tab_config.cached_song.instance,
+            outputs=tab_config.source.instance,
+            show_progress="hidden",
+        )
+
+    with gr.Row():
+        tab_config.voice_model.instance.render()
+
+
+def _render_main_options(tab_config: OneClickSongGenerationConfig) -> None:
+    with gr.Row():
+        tab_config.n_octaves.instantiate()
+        tab_config.n_semitones.instantiate()
 
 
 def _render_conversion_options(tab_config: OneClickSongGenerationConfig) -> None:
 
-    with gr.Accordion("Vocal conversion options", open=False):
+    with gr.Accordion("Vocal conversion", open=False):
         gr.Markdown("")
-        with gr.Accordion("Voice synthesis settings", open=False):
+        with gr.Accordion("Voice synthesis", open=False):
             with gr.Row():
                 tab_config.f0_methods.instantiate()
                 tab_config.index_rate.instantiate()
@@ -224,7 +230,7 @@ def _render_conversion_options(tab_config: OneClickSongGenerationConfig) -> None
                 tab_config.rms_mix_rate.instantiate()
                 tab_config.protect_rate.instantiate()
                 tab_config.hop_length.instantiate()
-        with gr.Accordion("Vocal enrichment settings", open=False):
+        with gr.Accordion("Vocal enrichment", open=False):
             with gr.Row():
                 with gr.Column():
                     tab_config.split_voice.instantiate()
@@ -246,7 +252,7 @@ def _render_conversion_options(tab_config: OneClickSongGenerationConfig) -> None
                 outputs=tab_config.clean_strength.instance,
                 show_progress="hidden",
             )
-        with gr.Accordion("Speaker embedding settings", open=False):
+        with gr.Accordion("Speaker embedding", open=False):
             with gr.Row():
                 with gr.Column():
                     tab_config.embedder_model.instantiate()
@@ -261,7 +267,7 @@ def _render_conversion_options(tab_config: OneClickSongGenerationConfig) -> None
 
 
 def _render_mixing_options(tab_config: OneClickSongGenerationConfig) -> None:
-    with gr.Accordion("Audio mixing options", open=False):
+    with gr.Accordion("Audio mixing", open=False):
         gr.Markdown("")
         with gr.Accordion("Reverb control on converted vocals", open=False):
             with gr.Row():
@@ -279,7 +285,7 @@ def _render_mixing_options(tab_config: OneClickSongGenerationConfig) -> None:
 
 def _render_output_options(tab_config: OneClickSongGenerationConfig) -> None:
 
-    with gr.Accordion("Audio output options", open=False):
+    with gr.Accordion("Audio output", open=False):
         with gr.Row():
             tab_config.output_name.instantiate(
                 value=partial(

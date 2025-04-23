@@ -1,7 +1,22 @@
 # TODO
-  * fix configuration saving/loading so that visibility status can also be saved and loaded
+
+* fix configuration saving/loading so that visibility status can also be saved and loaded
   * this needs to be done statically: when defining a configuration component there should be an optional children field which denotes the children of the component that will be unfolded, i.e. shouldb become visible. There hsould also (perhaps on the same field) be a defined value for which the child components should be visible. Then during the saving of new component values, we will do a check where we see if a given component has any children. if so and if the new component value is equal to the value for which the children should become visible, then we set the visibility field on the children to true. 
   * When this has been implemented we can finally have all the components with children be included rather than excluded from saving and loading as is the case now (and of course the visiblity of their children will be saved too)
+
+* remodularize frontend code to reflect new tab layout
+  * We no longer have a "management concept" instead audio, models, settings and generate should have their own modules/packages
+  * train should be a sub-package of model
+  * We should also update the layout under web/config so that the nested pydantic models represent the new tab layout
+
+* We need to make a new custom theme for the ui where
+  * shading on nested accordion is better to differentiate the accordions
+  * miku avatar is not included
+  * maybe use zorianas purple theme as inspiration?
+  * nested tabs are handled better
+    * perhaps these are just hidden and you can toggle visible tab with a button
+    * or just remove the multi-step tabs altogether
+  * maybe also hightlight the "HOW TO" text in blue
 
 ## Project/task management
 

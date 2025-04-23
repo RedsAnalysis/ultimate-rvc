@@ -1,4 +1,4 @@
-"""Module which defines the code for the "Manage audio" tab."""
+"""Module which defines the code for the "Audio" tab."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
 def render(total_config: TotalConfig) -> None:
     """
-    Render "Manage audio" tab.
+    Render "Audio" tab.
 
     Parameters
     ----------
@@ -47,7 +47,7 @@ def render(total_config: TotalConfig) -> None:
     tab_config.dummy_checkbox.instantiate()
     event_state = ManageAudioEventState()
 
-    with gr.Tab("Delete audio"):
+    with gr.Tab("Delete"):
         _render_intermediate_accordion(tab_config, event_state)
         _render_speech_accordion(tab_config, event_state)
         _render_output_accordion(tab_config, event_state)

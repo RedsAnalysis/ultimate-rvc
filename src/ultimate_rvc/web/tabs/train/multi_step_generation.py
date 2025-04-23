@@ -1,6 +1,6 @@
 """
 Module which defines the code for the
-"Train models - multi-step generation" tab.
+"Model train - multi-step generation" tab.
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ GPU_CHOICES = get_gpu_info()
 
 def render(total_config: TotalConfig) -> None:
     """
-    Render the "Train models - multi-step generation" tab.
+    Render the "Model train - multi-step generation" tab.
 
     Parameters
     ----------
@@ -119,7 +119,7 @@ def _render_step_1(total_config: TotalConfig) -> None:
         )
         with gr.Row():
             tab_config.preprocess_model.instance.render()
-        with gr.Accordion("Settings", open=False):
+        with gr.Accordion("Options", open=False):
             with gr.Row():
                 with gr.Column():
                     tab_config.sample_rate.instantiate()
@@ -159,7 +159,7 @@ def _render_step_1(total_config: TotalConfig) -> None:
                 )
         with gr.Row(equal_height=True):
             reset_preprocess_btn = gr.Button(
-                "Reset settings",
+                "Reset options",
                 variant="secondary",
                 scale=2,
             )
@@ -244,7 +244,7 @@ def _render_step_2(total_config: TotalConfig) -> None:
     with gr.Accordion("Step 2: feature extraction", open=True):
         with gr.Row():
             tab_config.extract_model.instance.render()
-        with gr.Accordion("Settings", open=False):
+        with gr.Accordion("Options", open=False):
             with gr.Row():
                 with gr.Column():
                     tab_config.f0_method.instantiate()
@@ -290,7 +290,7 @@ def _render_step_2(total_config: TotalConfig) -> None:
             )
         with gr.Row(equal_height=True):
             reset_extract_btn = gr.Button(
-                "Reset settings",
+                "Reset options",
                 variant="secondary",
                 scale=2,
             )
@@ -350,16 +350,14 @@ def _render_step_3(total_config: TotalConfig) -> None:
     with gr.Accordion("Step 3: model training"):
         with gr.Row():
             tab_config.train_model.instance.render()
-        with gr.Accordion("Settings", open=False):
+        with gr.Accordion("Options", open=False):
             _render_step_3_main_settings(tab_config)
             _render_step_3_algorithmic_settings(tab_config)
             _render_step_3_data_storage_settings(tab_config)
             _render_step_3_device_settings(tab_config)
 
-        with gr.Accordion("Output", open=True):
-            voice_model_files = gr.File(label="Voice model files", interactive=False)
         with gr.Row(equal_height=True):
-            reset_train_btn = gr.Button("Reset settings", variant="secondary", scale=2)
+            reset_train_btn = gr.Button("Reset options", variant="secondary", scale=2)
             train_btn = gr.Button("Train voice model", variant="primary", scale=2)
             stop_train_btn = gr.Button(
                 "Stop training",
@@ -368,106 +366,107 @@ def _render_step_3(total_config: TotalConfig) -> None:
                 visible=False,
             )
             train_msg = gr.Textbox(label="Output message", interactive=False, scale=3)
-            train_btn.click(
-                partial(toggle_visible_component, 2, 1, reset_values=False),
-                outputs=[train_btn, stop_train_btn],
-                show_progress="hidden",
-            )
-            train_btn_click = train_btn.click(
-                exception_harness(run_training),
-                inputs=[
-                    tab_config.train_model.instance,
-                    tab_config.num_epochs.instance,
-                    tab_config.batch_size.instance,
-                    tab_config.detect_overtraining.instance,
-                    tab_config.overtraining_threshold.instance,
-                    tab_config.vocoder.instance,
-                    tab_config.index_algorithm.instance,
-                    tab_config.pretrained_type.instance,
-                    tab_config.custom_pretrained_model.instance,
-                    tab_config.save_interval.instance,
-                    tab_config.save_all_checkpoints.instance,
-                    tab_config.save_all_weights.instance,
-                    tab_config.clear_saved_data.instance,
-                    tab_config.upload_model.instance,
-                    tab_config.upload_name.instance,
-                    tab_config.training_acceleration.instance,
-                    tab_config.training_gpus.instance,
-                    tab_config.preload_dataset.instance,
-                    tab_config.reduce_memory_usage.instance,
-                ],
-                outputs=voice_model_files,
-                show_progress_on=train_msg,
-                concurrency_limit=1,
-                concurrency_id=ConcurrencyId.GPU,
-            )
+        voice_model_files = gr.File(label="Voice model files", interactive=False)
+        train_btn.click(
+            partial(toggle_visible_component, 2, 1, reset_values=False),
+            outputs=[train_btn, stop_train_btn],
+            show_progress="hidden",
+        )
+        train_btn_click = train_btn.click(
+            exception_harness(run_training),
+            inputs=[
+                tab_config.train_model.instance,
+                tab_config.num_epochs.instance,
+                tab_config.batch_size.instance,
+                tab_config.detect_overtraining.instance,
+                tab_config.overtraining_threshold.instance,
+                tab_config.vocoder.instance,
+                tab_config.index_algorithm.instance,
+                tab_config.pretrained_type.instance,
+                tab_config.custom_pretrained_model.instance,
+                tab_config.save_interval.instance,
+                tab_config.save_all_checkpoints.instance,
+                tab_config.save_all_weights.instance,
+                tab_config.clear_saved_data.instance,
+                tab_config.upload_model.instance,
+                tab_config.upload_name.instance,
+                tab_config.training_acceleration.instance,
+                tab_config.training_gpus.instance,
+                tab_config.preload_dataset.instance,
+                tab_config.reduce_memory_usage.instance,
+            ],
+            outputs=voice_model_files,
+            show_progress_on=train_msg,
+            concurrency_limit=1,
+            concurrency_id=ConcurrencyId.GPU,
+        )
 
-            train_btn_click.then(
-                partial(toggle_visible_component, 2, 0, reset_values=False),
-                outputs=[train_btn, stop_train_btn],
-                show_progress="hidden",
-            )
+        train_btn_click.then(
+            partial(toggle_visible_component, 2, 0, reset_values=False),
+            outputs=[train_btn, stop_train_btn],
+            show_progress="hidden",
+        )
 
-            train_btn_click.success(
-                partial(render_msg, "[+] Voice model successfully trained!"),
-                outputs=train_msg,
-                show_progress="hidden",
-            ).then(
-                partial(update_dropdowns, get_voice_model_names, 5, [], [4]),
-                outputs=[
-                    total_config.song.one_click.voice_model.instance,
-                    total_config.song.multi_step.voice_model.instance,
-                    total_config.speech.one_click.voice_model.instance,
-                    total_config.speech.multi_step.voice_model.instance,
-                    total_config.management.model.voices.instance,
-                ],
-                show_progress="hidden",
-            )
+        train_btn_click.success(
+            partial(render_msg, "[+] Voice model successfully trained!"),
+            outputs=train_msg,
+            show_progress="hidden",
+        ).then(
+            partial(update_dropdowns, get_voice_model_names, 5, [], [4]),
+            outputs=[
+                total_config.song.one_click.voice_model.instance,
+                total_config.song.multi_step.voice_model.instance,
+                total_config.speech.one_click.voice_model.instance,
+                total_config.speech.multi_step.voice_model.instance,
+                total_config.management.model.voices.instance,
+            ],
+            show_progress="hidden",
+        )
 
-            stop_train_btn.click(
-                stop_training,
-                inputs=tab_config.train_model.instance,
-                show_progress="hidden",
-            )
-            reset_train_btn.click(
-                lambda: [
-                    tab_config.num_epochs.value,
-                    tab_config.batch_size.value,
-                    tab_config.detect_overtraining.value,
-                    tab_config.overtraining_threshold.value,
-                    tab_config.vocoder.value,
-                    tab_config.index_algorithm.value,
-                    tab_config.pretrained_type.value,
-                    tab_config.save_interval.value,
-                    tab_config.save_all_checkpoints.value,
-                    tab_config.save_all_weights.value,
-                    tab_config.clear_saved_data.value,
-                    tab_config.upload_model.value,
-                    tab_config.training_acceleration.value,
-                    GPU_CHOICES[0][1] if GPU_CHOICES else None,
-                    tab_config.preload_dataset.value,
-                    tab_config.reduce_memory_usage.value,
-                ],
-                outputs=[
-                    tab_config.num_epochs.instance,
-                    tab_config.batch_size.instance,
-                    tab_config.detect_overtraining.instance,
-                    tab_config.overtraining_threshold.instance,
-                    tab_config.vocoder.instance,
-                    tab_config.index_algorithm.instance,
-                    tab_config.pretrained_type.instance,
-                    tab_config.save_interval.instance,
-                    tab_config.save_all_checkpoints.instance,
-                    tab_config.save_all_weights.instance,
-                    tab_config.clear_saved_data.instance,
-                    tab_config.upload_model.instance,
-                    tab_config.training_acceleration.instance,
-                    tab_config.training_gpus.instance,
-                    tab_config.preload_dataset.instance,
-                    tab_config.reduce_memory_usage.instance,
-                ],
-                show_progress="hidden",
-            )
+        stop_train_btn.click(
+            stop_training,
+            inputs=tab_config.train_model.instance,
+            show_progress="hidden",
+        )
+        reset_train_btn.click(
+            lambda: [
+                tab_config.num_epochs.value,
+                tab_config.batch_size.value,
+                tab_config.detect_overtraining.value,
+                tab_config.overtraining_threshold.value,
+                tab_config.vocoder.value,
+                tab_config.index_algorithm.value,
+                tab_config.pretrained_type.value,
+                tab_config.save_interval.value,
+                tab_config.save_all_checkpoints.value,
+                tab_config.save_all_weights.value,
+                tab_config.clear_saved_data.value,
+                tab_config.upload_model.value,
+                tab_config.training_acceleration.value,
+                GPU_CHOICES[0][1] if GPU_CHOICES else None,
+                tab_config.preload_dataset.value,
+                tab_config.reduce_memory_usage.value,
+            ],
+            outputs=[
+                tab_config.num_epochs.instance,
+                tab_config.batch_size.instance,
+                tab_config.detect_overtraining.instance,
+                tab_config.overtraining_threshold.instance,
+                tab_config.vocoder.instance,
+                tab_config.index_algorithm.instance,
+                tab_config.pretrained_type.instance,
+                tab_config.save_interval.instance,
+                tab_config.save_all_checkpoints.instance,
+                tab_config.save_all_weights.instance,
+                tab_config.clear_saved_data.instance,
+                tab_config.upload_model.instance,
+                tab_config.training_acceleration.instance,
+                tab_config.training_gpus.instance,
+                tab_config.preload_dataset.instance,
+                tab_config.reduce_memory_usage.instance,
+            ],
+            show_progress="hidden",
+        )
 
 
 def _render_step_3_main_settings(tab_config: MultiStepTrainingConfig) -> None:
@@ -486,7 +485,7 @@ def _render_step_3_main_settings(tab_config: MultiStepTrainingConfig) -> None:
 
 
 def _render_step_3_algorithmic_settings(tab_config: MultiStepTrainingConfig) -> None:
-    with gr.Accordion("Algorithmic settings", open=False):
+    with gr.Accordion("Algorithmic", open=False):
         with gr.Row():
             tab_config.vocoder.instantiate()
             tab_config.index_algorithm.instantiate()
@@ -504,7 +503,7 @@ def _render_step_3_algorithmic_settings(tab_config: MultiStepTrainingConfig) -> 
 
 def _render_step_3_data_storage_settings(tab_config: MultiStepTrainingConfig) -> None:
 
-    with gr.Accordion("Data storage settings", open=False):
+    with gr.Accordion("Data storage", open=False):
         with gr.Row():
             tab_config.save_interval.instantiate()
         with gr.Row():
@@ -527,7 +526,7 @@ def _render_step_3_data_storage_settings(tab_config: MultiStepTrainingConfig) ->
 
 
 def _render_step_3_device_settings(tab_config: MultiStepTrainingConfig) -> None:
-    with gr.Accordion("Device and memory settings", open=False):
+    with gr.Accordion("Device and memory", open=False):
         with gr.Column():
             tab_config.training_acceleration.instantiate()
             tab_config.training_gpus.instantiate(
