@@ -13,6 +13,7 @@
 * add support me/by me coffee section on readme
 * add an acknowledgements section to readme
 * move the show intermediate audio checkbox out to the outermost level of the options accordion
+* also have one click speech output on separate row
 * add option for web ui to load with a specific theme given as a string. 
 * make song_dir nullable so that when it is not added explicitly in multi-step tab then a new unique song dir is created
   * this way we can also hide away the song directory dropdown under options sub accordion.
