@@ -95,7 +95,7 @@ def run_pipeline(
                 " potentially reduce artifacts at the cost of accent accuracy."
             ),
         ),
-    ] = 0.5,
+    ] = 0.3,
     rms_mix_rate: Annotated[
         float,
         typer.Option(
@@ -108,7 +108,7 @@ def run_pipeline(
                 " loudness (1) during vocal conversion."
             ),
         ),
-    ] = 0.25,
+    ] = 1.0,
     protect_rate: Annotated[
         float,
         typer.Option(

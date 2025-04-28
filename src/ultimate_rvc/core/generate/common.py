@@ -266,8 +266,8 @@ def convert(
     n_octaves: int = 0,
     n_semitones: int = 0,
     f0_methods: Sequence[F0Method] | None = None,
-    index_rate: float = 0.5,
-    rms_mix_rate: float = 0.25,
+    index_rate: float = 0.3,
+    rms_mix_rate: float = 1.0,
     protect_rate: float = 0.33,
     hop_length: int = 128,
     split_audio: bool = False,
@@ -300,9 +300,9 @@ def convert(
     f0_methods : Sequence[F0Method], optional
         The methods to use for pitch extraction. If None, the method
         used is rmvpe.
-    index_rate : float, default=0.5
+    index_rate : float, default=0.3
         The influence of the index file on the voice conversion.
-    rms_mix_rate : float, default=0.25
+    rms_mix_rate : float, default = 1.0
         The blending rate of the volume envelope of the converted
         audio.
     protect_rate : float, default=0.33

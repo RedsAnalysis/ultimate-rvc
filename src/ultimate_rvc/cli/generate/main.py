@@ -189,7 +189,7 @@ def convert_voice(
                 " potentially reduce artifacts."
             ),
         ),
-    ] = 0.5,
+    ] = 0.3,
     rms_mix_rate: Annotated[
         float,
         typer.Option(
@@ -202,7 +202,7 @@ def convert_voice(
                 " loudness (1)."
             ),
         ),
-    ] = 0.25,
+    ] = 1.0,
     protect_rate: Annotated[
         float,
         typer.Option(

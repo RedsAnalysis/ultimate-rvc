@@ -278,7 +278,7 @@ def run_pipeline(
                 " Decrease to potentially reduce artifacts."
             ),
         ),
-    ] = 0.5,
+    ] = 0.3,
     rms_mix_rate: Annotated[
         float,
         typer.Option(
@@ -291,7 +291,7 @@ def run_pipeline(
                 " speech (0) or a fixed loudness (1)."
             ),
         ),
-    ] = 0.25,
+    ] = 1.0,
     protect_rate: Annotated[
         float,
         typer.Option(

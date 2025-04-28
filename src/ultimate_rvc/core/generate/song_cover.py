@@ -133,9 +133,9 @@ def _get_audio_separator(
         mdx_params={
             "hop_length": 1024,
             "segment_size": segment_size,
-            "overlap": 0.001,
+            "overlap": 0.25,
             "batch_size": 1,
-            "enable_denoise": False,
+            "enable_denoise": True,
         },
     )
 
@@ -909,8 +909,8 @@ def run_pipeline(
     n_octaves: int = 0,
     n_semitones: int = 0,
     f0_methods: Sequence[F0Method] | None = None,
-    index_rate: float = 0.5,
-    rms_mix_rate: float = 0.25,
+    index_rate: float = 0.3,
+    rms_mix_rate: float = 1.0,
     protect_rate: float = 0.33,
     hop_length: int = 128,
     split_vocals: bool = False,
@@ -952,9 +952,9 @@ def run_pipeline(
     f0_methods : Sequence[F0Method], optional
         The methods to use for pitch extraction during vocal
         conversion. If None, the method used is rmvpe.
-    index_rate : float, default=0.5
+    index_rate : float, default=0.3
         The influence of the index file on the vocal conversion.
-    rms_mix_rate : float, default=0.25
+    rms_mix_rate : float, default=1.0
         The blending rate of the volume envelope of the converted
         vocals.
     protect_rate : float, default=0.33

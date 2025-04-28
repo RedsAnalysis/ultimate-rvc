@@ -124,7 +124,7 @@ class GenerationConfig(BaseTabConfig):
             " Decrease to potentially reduce artifacts coming from the voice"
             " model.<br><br><br>"
         ),
-        value=0.5,
+        value=0.3,
         minimum=0.0,
         maximum=1.0,
     )
@@ -132,9 +132,9 @@ class GenerationConfig(BaseTabConfig):
         label="RMS mix rate",
         info=(
             "How much to mimic the loudness (0) of the input voice or a fixed loudness"
-            " (1). A value of 0.25 is recommended for most cases.<br><br>"
+            " (1). A value of 1 is recommended for most cases.<br><br>"
         ),
-        value=0.25,
+        value=1.0,
         minimum=0.0,
         maximum=1.0,
     )
