@@ -79,7 +79,7 @@ def render_app() -> gr.Blocks:
 
     with gr.Blocks(
         title="Ultimate RVC",
-        theme="NoCrypt/miku",
+        theme="JackismyShephard/ultimate-rvc-theme",
         css=css,
         delete_cache=(cache_delete_frequency, cache_delete_cutoff),
     ) as app:
