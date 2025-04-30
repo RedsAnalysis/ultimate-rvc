@@ -676,6 +676,7 @@ class AudioConfig(ComponentConfig[str | Path | None, gr.Audio]):
             visible=self.visible,
             render=self.render,
             scale=self.scale,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
 
     @classmethod

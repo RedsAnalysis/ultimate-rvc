@@ -106,6 +106,7 @@ def _render_step_1(total_config: TotalConfig) -> None:
             label="Generated speech",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
         tts_reset_btn.click(
             lambda: [
@@ -209,6 +210,7 @@ def _render_step_2(total_config: TotalConfig) -> None:
             label="Converted speech",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
         convert_speech_reset_btn.click(
             lambda: [
@@ -321,6 +323,7 @@ def _render_step_3(total_config: TotalConfig) -> None:
             label="Mixed speech",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
 
         mix_speech_reset_btn.click(

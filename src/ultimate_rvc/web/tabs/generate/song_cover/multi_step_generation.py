@@ -78,7 +78,12 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
                 tab_config.source_type.instantiate()
             with gr.Column():
                 tab_config.source.instantiate()
-                local_file = gr.Audio(label="Source", type="filepath", visible=False)
+                local_file = gr.Audio(
+                    label="Source",
+                    type="filepath",
+                    visible=False,
+                    waveform_options=gr.WaveformOptions(show_recording_waveform=False),
+                )
                 tab_config.cached_song.instance.render()
 
             tab_config.source_type.instance.input(
@@ -113,7 +118,12 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
             retrieve_song_reset_btn = gr.Button("Reset options")
             retrieve_song_btn = gr.Button("Retrieve song", variant="primary")
         song_transfer_btn = gr.Button("Transfer song")
-        song_output = gr.Audio(label="Song", type="filepath", interactive=False)
+        song_output = gr.Audio(
+            label="Song",
+            type="filepath",
+            interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
+        )
 
         retrieve_song_reset_btn.click(
             lambda: gr.Dropdown(value=[SongTransferOption.STEP_1_AUDIO]),
@@ -189,11 +199,13 @@ def _render_step_1(tab_config: MultiStepSongGenerationConfig) -> None:
                 label="Primary stem",
                 type="filepath",
                 interactive=False,
+                waveform_options=gr.WaveformOptions(show_recording_waveform=False),
             )
             secondary_stem_output = gr.Audio(
                 label="Secondary stem",
                 type="filepath",
                 interactive=False,
+                waveform_options=gr.WaveformOptions(show_recording_waveform=False),
             )
 
         separate_audio_reset_btn.click(
@@ -305,6 +317,7 @@ def _render_step_2(tab_config: MultiStepSongGenerationConfig) -> None:
             label="Converted vocals",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
 
         convert_vocals_reset_btn.click(
@@ -404,6 +417,7 @@ def _render_step_3(tab_config: MultiStepSongGenerationConfig) -> None:
             label="Effected vocals",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
 
         postprocess_vocals_reset_btn.click(
@@ -486,11 +500,13 @@ def _render_step_4(tab_config: MultiStepSongGenerationConfig) -> None:
                 label="Pitch-shifted instrumentals",
                 type="filepath",
                 interactive=False,
+                waveform_options=gr.WaveformOptions(show_recording_waveform=False),
             )
             shifted_backup_vocals_track_output = gr.Audio(
                 label="Pitch-shifted backup vocals",
                 type="filepath",
                 interactive=False,
+                waveform_options=gr.WaveformOptions(show_recording_waveform=False),
             )
 
         pitch_shift_background_reset_btn.click(
@@ -590,6 +606,7 @@ def _render_step_5(
             label="Song cover",
             type="filepath",
             interactive=False,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
         )
         mix_reset_btn.click(
             lambda: [
