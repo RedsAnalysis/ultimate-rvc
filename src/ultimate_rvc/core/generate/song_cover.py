@@ -126,7 +126,7 @@ def _get_audio_separator(
     """
     return Separator(
         model_file_dir=SEPARATOR_MODELS_DIR,
-        use_autocast=True,
+        use_autocast=False,
         output_dir=output_dir,
         output_format=output_format,
         sample_rate=sample_rate,
