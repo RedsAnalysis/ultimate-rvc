@@ -17,7 +17,7 @@ dependencies = [
     "typer==0.15.2",
     
     # Networking
-    "requests==2.32.3",
+    "requests==2.32.4",
     "yt_dlp>=2025.1.26",
     "nodejs-wheel-binaries==22.14.0",
     "wget==3.2",
