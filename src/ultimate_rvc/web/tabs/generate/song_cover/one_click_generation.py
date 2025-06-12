@@ -62,7 +62,11 @@ def render(total_config: TotalConfig, cookiefile: str | None = None) -> None:
         with gr.Row(equal_height=True):
             reset_btn = gr.Button(value="Reset options", scale=2)
             generate_btn = gr.Button("Generate", scale=2, variant="primary")
-        song_cover = gr.Audio(label="Song cover", scale=3)
+        song_cover = gr.Audio(
+            label="Song cover",
+            scale=3,
+            waveform_options=gr.WaveformOptions(show_recording_waveform=False),
+        )
         song_dirs = total_config.song.multi_step.song_dirs.all
         generate_btn.click(
             partial(
@@ -182,7 +186,12 @@ def _render_input(tab_config: OneClickSongGenerationConfig) -> None:
             tab_config.source_type.instantiate()
         with gr.Column():
             tab_config.source.instantiate()
-            local_file = gr.Audio(label="Source", type="filepath", visible=False)
+            local_file = gr.Audio(
+                label="Source",
+                type="filepath",
+                visible=False,
+                waveform_options=gr.WaveformOptions(show_recording_waveform=False),
+            )
             tab_config.cached_song.instance.render()
         tab_config.source_type.instance.input(
             partial(toggle_visible_component, 3),
