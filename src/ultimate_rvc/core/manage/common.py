@@ -12,7 +12,6 @@ import shutil
 from pathlib import Path
 
 if TYPE_CHECKING:
-
     from ultimate_rvc.typing_extra import StrPath
 
 

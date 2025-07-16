@@ -31,7 +31,6 @@ from ultimate_rvc.web.common import (
 from ultimate_rvc.web.typing_extra import ConcurrencyId
 
 if TYPE_CHECKING:
-
     from ultimate_rvc.web.config.main import OneClickSongGenerationConfig, TotalConfig
 
 
@@ -228,7 +227,6 @@ def _render_main_options(tab_config: OneClickSongGenerationConfig) -> None:
 
 
 def _render_conversion_options(tab_config: OneClickSongGenerationConfig) -> None:
-
     with gr.Accordion("Vocal conversion", open=False):
         gr.Markdown("")
         with gr.Accordion("Voice synthesis", open=False):
@@ -293,7 +291,6 @@ def _render_mixing_options(tab_config: OneClickSongGenerationConfig) -> None:
 
 
 def _render_output_options(tab_config: OneClickSongGenerationConfig) -> None:
-
     with gr.Accordion("Audio output", open=False):
         with gr.Row():
             tab_config.output_name.instantiate(

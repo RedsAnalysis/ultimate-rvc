@@ -263,7 +263,6 @@ def _render_output_options(tab_config: OneClickSpeechGenerationConfig) -> None:
 
 
 def _render_intermediate_audio(tab_config: OneClickSpeechGenerationConfig) -> None:
-
     with gr.Accordion(
         "Intermediate audio tracks",
         open=False,

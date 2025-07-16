@@ -51,7 +51,6 @@ def _render_config_files_tab(
 ) -> None:
     components = [config.instance for config in total_config.all]
     with gr.Tab("Configuration files"):
-
         with gr.Accordion("Save configuration"), gr.Row():
             with gr.Column():
                 save_config_name = gr.Textbox(

@@ -251,7 +251,6 @@ def run_edge_tts(
     converted_audio_path, converted_audio_json_path = paths
 
     if not all(path.exists() for path in paths):
-
         pitch_shift_str = f"{pitch_shift:+}Hz"
         speed_change_str = f"{speed_change:+}%"
         volume_change_str = f"{volume_change:+}%"

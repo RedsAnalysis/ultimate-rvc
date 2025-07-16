@@ -185,7 +185,6 @@ def wavify(
         ]
         wav_path, wav_json_path = paths
         if not all(path.exists() for path in paths):
-
             _, stderr = (
                 ffmpeg.input(audio_path)
                 .output(filename=wav_path, f="wav")
@@ -409,7 +408,6 @@ def convert(
     converted_audio_path, converted_audio_json_path = paths
 
     if not all(path.exists() for path in paths):
-
         rvc_model_path, rvc_index_path = _get_rvc_files(model_name)
 
         voice_converter = _get_voice_converter()
@@ -601,7 +599,6 @@ def mix_audio(
     mix_path, mix_json_path = paths
 
     if not all(path.exists() for path in paths):
-
         _mix_audio(audio_path_gain_pairs, mix_path, output_sr, output_format)
         json_dump(args_dict, mix_json_path)
     return mix_path

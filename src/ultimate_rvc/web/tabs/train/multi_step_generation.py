@@ -502,7 +502,6 @@ def _render_step_3_algorithmic_settings(tab_config: MultiStepTrainingConfig) -> 
 
 
 def _render_step_3_data_storage_settings(tab_config: MultiStepTrainingConfig) -> None:
-
     with gr.Accordion("Data storage", open=False):
         with gr.Row():
             tab_config.save_interval.instantiate()

@@ -28,7 +28,6 @@ from ultimate_rvc.web.config.tab import (
 )
 
 if TYPE_CHECKING:
-
     import gradio as gr
 
 

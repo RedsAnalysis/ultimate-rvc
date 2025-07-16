@@ -100,7 +100,6 @@ def _get_audio_separator(
     segment_size: int = SegmentSize.SEG_256,
     sample_rate: int = 44100,
 ) -> Separator:
-
     static_ffmpeg.add_paths(weak=True)
     from audio_separator.separator import Separator  # noqa: PLC0415
 

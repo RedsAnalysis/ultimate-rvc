@@ -28,7 +28,6 @@ from ultimate_rvc.web.common import setup_delete_event, update_dropdowns
 from ultimate_rvc.web.config.event import ManageAudioEventState
 
 if TYPE_CHECKING:
-
     from ultimate_rvc.web.config.main import AudioManagementConfig, TotalConfig
 
 
@@ -187,7 +186,6 @@ def _render_output_accordion(
     tab_config: AudioManagementConfig,
     event_state: ManageAudioEventState,
 ) -> None:
-
     with gr.Accordion("Output audio", open=False), gr.Row():
         with gr.Column():
             tab_config.output.instance.render()
@@ -217,7 +215,6 @@ def _render_dataset_accordion(
     tab_config: AudioManagementConfig,
     event_state: ManageAudioEventState,
 ) -> None:
-
     with gr.Accordion("Dataset audio", open=False), gr.Row():
         with gr.Column():
             tab_config.dataset.instance.render()
@@ -248,7 +245,6 @@ def _render_all_accordion(
     tab_config: AudioManagementConfig,
     event_state: ManageAudioEventState,
 ) -> None:
-
     with gr.Accordion("All audio", open=True), gr.Row(equal_height=True):
         all_audio_btn = gr.Button("Delete", variant="primary")
         all_audio_msg = gr.Textbox(label="Output message", interactive=False)

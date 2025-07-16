@@ -48,7 +48,6 @@ from ultimate_rvc.web.tabs.train.multi_step_generation import (
 )
 
 if TYPE_CHECKING:
-
     from ultimate_rvc.web.config.main import ModelManagementConfig, TotalConfig
 
 
@@ -374,7 +373,6 @@ def _render_delete_tab(
     tab_config: ModelManagementConfig,
     event_state: ManageModelEventState,
 ) -> None:
-
     with gr.Tab("Delete"):
         _render_voices_accordion(tab_config, event_state)
         _render_embedders_accordion(tab_config, event_state)
@@ -418,7 +416,6 @@ def _render_embedders_accordion(
     tab_config: ModelManagementConfig,
     event_state: ManageModelEventState,
 ) -> None:
-
     with gr.Accordion("Custom embedder models", open=False), gr.Row():
         with gr.Column():
             tab_config.embedders.instance.render()
@@ -483,7 +480,6 @@ def _render_traineds_accordion(
     tab_config: ModelManagementConfig,
     event_state: ManageModelEventState,
 ) -> None:
-
     with gr.Accordion("Training models", open=False), gr.Row():
         with gr.Column():
             tab_config.traineds.instance.render()

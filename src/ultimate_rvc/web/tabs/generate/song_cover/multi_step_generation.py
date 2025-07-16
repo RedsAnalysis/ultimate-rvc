@@ -149,13 +149,11 @@ def _render_step_0(total_config: TotalConfig, cookiefile: str | None) -> None:
                 value_indices=range(len(tab_config.song_dirs.all)),
             ),
             inputs=current_song_dir,
-            outputs=(
-                [
-                    *tab_config.song_dirs.all,
-                    tab_config.cached_song.instance,
-                    total_config.song.one_click.cached_song.instance,
-                ]
-            ),
+            outputs=[
+                *tab_config.song_dirs.all,
+                tab_config.cached_song.instance,
+                total_config.song.one_click.cached_song.instance,
+            ],
             show_progress="hidden",
         ).then(
             partial(update_dropdowns, get_named_song_dirs, 1, [], [0]),
