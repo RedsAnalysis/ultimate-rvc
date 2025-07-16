@@ -1,7 +1,20 @@
 # TODO
 
+* figure out a way of safely storing PyPI credentials
+* promote dependencies to latest versions
+  * and do proper testing before committing
+* setup testing with pytest
+  * setup folder structure for tests
+  * configure required dependencies in `pyproject.toml`
+    * pytest, faker
+  * setup pytest configuration in `pyproject.toml`
+  * setup pytest pre-commit hook
+* setup test coverage
+  * first research best framework for this in python
+* setup auto documentation generation
+
 * fix configuration saving/loading so that visibility status can also be saved and loaded
-  * this needs to be done statically: when defining a configuration component there should be an optional children field which denotes the children of the component that will be unfolded, i.e. shouldb become visible. There hsould also (perhaps on the same field) be a defined value for which the child components should be visible. Then during the saving of new component values, we will do a check where we see if a given component has any children. if so and if the new component value is equal to the value for which the children should become visible, then we set the visibility field on the children to true. 
+  * this needs to be done statically: when defining a configuration component there should be an optional children field which denotes the children of the component that will be unfolded, i.e. shouldb become visible. There hsould also (perhaps on the same field) be a defined value for which the child components should be visible. Then during the saving of new component values, we will do a check where we see if a given component has any children. if so and if the new component value is equal to the value for which the children should become visible, then we set the visibility field on the children to true.
   * When this has been implemented we can finally have all the components with children be included rather than excluded from saving and loading as is the case now (and of course the visiblity of their children will be saved too)
 
 * remodularize frontend code to reflect new tab layout
@@ -85,11 +98,11 @@
   * Possible solutions
     * use gr.browserstate to allow state to be preserved acrross page loads.
     * Save any changes to components to a session dictionary and load from it upon refresh
-      * See [here](https://github.com/gradio-app/gradio/issues/3106#issuecomment-1694704623)
+      * See [this GitHub issue comment](https://github.com/gradio-app/gradio/issues/3106#issuecomment-1694704623)
       * Problem is that this solution might not work with accordions or other types of blocks
             * should use .expand() and .collapse() event listeners on accordions to programmatically reset the state of accordions to what they were before after user has refreshed the page
     * Use localstorage
-      * see [here](https://huggingface.co/spaces/YiXinCoding/gradio-chat-history/blob/main/app.py) and [here](https://huggingface.co/spaces/radames/gradio_window_localStorage/blob/main/app.py)
+      * see [this chat history example](https://huggingface.co/spaces/YiXinCoding/gradio-chat-history/blob/main/app.py) and [this localStorage example](https://huggingface.co/spaces/radames/gradio_window_localStorage/blob/main/app.py)
 
     * Whenever the state of a component is changed save the new state to a custom JSON file.
       * Then whenever the app is refreshed load the current state of components from the JSON file
@@ -128,7 +141,7 @@
 
 ## Core
 
-### Common
+### Common Features
 
 * instead of having custom embedder models, just allow users to upload new embedder models which will be shown in the main embedder models dropdown (and perhaps also saved in the main embedder models dir?)
 
@@ -403,9 +416,11 @@
   * when ultimate rvc is downloaded as a pypi package the exposed commands are much faster so investigate this
 
 ## GitHub
+
 * setup discussions forum on repo
 * add support me/by me coffee section on readme
 * add an acknowledgements section to readme
+
 ### Actions
 
 * linting with Ruff

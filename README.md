@@ -13,9 +13,10 @@ An extension of [AiCoverGen](https://github.com/SociallyIneptWeeb/AICoverGen), w
 Ultimate RVC is under constant development and testing, but you can try it out right now locally or on Google Colab!
 
 ## Youtube Showcase
+
 * [Ultimate RVC: The Most Powerful AI Voice Cloning Tool Yet!](https://www.youtube.com/watch?v=dVpCF68JpNg)
 * [Ultimate-RVC on Your PC | Turn Any Voice Into Yours!](https://www.youtube.com/watch?v=IxFgz50y1AY)
-* [ Train Any Voice with Ultimate RVC | Fast & Accurate Voice Cloning](https://www.youtube.com/watch?v=O7VeYLL3H-c)
+* [Train Any Voice with Ultimate RVC | Fast & Accurate Voice Cloning](https://www.youtube.com/watch?v=O7VeYLL3H-c)
 
 Courtesy of [Social & Apps](https://www.youtube.com/@socialapps1194)
 
@@ -44,7 +45,7 @@ To setup the project follow the steps below and execute the provided commands in
 
 ### Install Git
 
-Follow the instructions [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) to install Git on your computer.
+Follow the [Git installation instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) to install Git on your computer.
 
 ### Set execution policy (Windows only)
 
@@ -145,7 +146,7 @@ The Ultimate RVC project package can then be installed as follows:
 pip install ultimate-rvc
 ```
 
-### Usage
+### CLI Usage
 
 The `ultimate-rvc` package can be used as a python library but is primarily intended to be used as a command line tool. The package exposes two top-level commands:
 

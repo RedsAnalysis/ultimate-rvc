@@ -5,7 +5,7 @@ CLI for the Ultimate RVC project
 **Usage**:
 
 ```console
-$ urvc-cli [OPTIONS] COMMAND [ARGS]...
+urvc-cli [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -25,7 +25,7 @@ Generate song covers
 **Usage**:
 
 ```console
-$ urvc-cli song-cover [OPTIONS] COMMAND [ARGS]...
+urvc-cli song-cover [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -43,7 +43,7 @@ Run the song cover generation pipeline.
 **Usage**:
 
 ```console
-$ urvc-cli song-cover run-pipeline [OPTIONS] SOURCE MODEL_NAME
+urvc-cli song-cover run-pipeline [OPTIONS] SOURCE MODEL_NAME
 ```
 
 **Arguments**:

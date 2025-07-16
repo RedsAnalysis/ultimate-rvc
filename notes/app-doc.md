@@ -5,7 +5,7 @@ Run the Ultimate RVC web application.
 **Usage**:
 
 ```console
-$ main [OPTIONS]
+main [OPTIONS]
 ```
 
 **Options**:

@@ -4,7 +4,7 @@
   
 * rework other settings tab
   * this should also contain other settings such as the ability to change the theme of the app
-      * Add Support for changing theme in app?
+    * Add Support for changing theme in app?
   * there should be a button to apply settings which will reload the app with the new settings
 
 * move all post processing from vocal conversion step to postprocessing step
@@ -46,7 +46,6 @@
   * training startup is 30 sec slower
 * figure out way of making ./urvc commands execute faster
   * when ultimate rvc is downloaded as a pypi package the exposed commands are much faster so investigate this
-
 
 * Add example audio files to use for testing
   * Should be located in `audio/examples`
