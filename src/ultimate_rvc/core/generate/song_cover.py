@@ -543,7 +543,7 @@ def retrieve_song(source: str, cookiefile: StrPath | None = None) -> tuple[Path,
 
     if not song_path:
         if source_type == SongSourceType.URL:
-            song_url = source.split("&")[0]
+            song_url = source.split("&", maxsplit=1)[0]
             song_path = _get_youtube_audio(song_url, song_dir_path, cookiefile)
 
         else:

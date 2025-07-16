@@ -305,7 +305,7 @@ def _render_step_3(total_config: TotalConfig) -> None:
                     value=partial(
                         update_output_name,
                         get_mixed_speech_track_name,
-                        False,  # noqa: FBT003,,
+                        False,  # noqa: FBT003
                     ),
                     inputs=[
                         gr.State(None),

@@ -356,5 +356,5 @@ def stop_training(model_name: str) -> None:
         training_info.process_pids = []
         updated_training_info_dict = training_info.model_dump()
         json_dump(updated_training_info_dict, training_info_path)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.error("Error stopping training: %s", e)  # noqa: TRY400

@@ -253,7 +253,7 @@ def _render_output_options(tab_config: OneClickSpeechGenerationConfig) -> None:
                 value=partial(
                     update_output_name,
                     get_mixed_speech_track_name,
-                    True,  # noqa: FBT003,,
+                    True,  # noqa: FBT003
                 ),
                 inputs=[tab_config.source.instance, tab_config.voice_model.instance],
             )

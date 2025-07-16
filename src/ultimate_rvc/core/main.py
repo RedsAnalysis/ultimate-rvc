@@ -46,7 +46,7 @@ def download_sample_models() -> None:
             rprint(f"Downloading {model_name}...")
             try:
                 download_voice_model(model_url, model_name)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 rprint(f"Failed to download {model_name}: {e}")
 
 

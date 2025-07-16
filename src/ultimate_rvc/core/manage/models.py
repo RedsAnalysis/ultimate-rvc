@@ -348,7 +348,7 @@ def download_voice_model(url: str, name: str) -> None:
     validate_url(url)
     extraction_path = validate_model(name, Entity.VOICE_MODEL, mode="not_exists")
 
-    zip_name = url.split("/")[-1].split("?")[0]
+    zip_name = url.rsplit("/", maxsplit=1)[-1].split("?", maxsplit=1)[0]
 
     # NOTE in case huggingface link is a direct link rather
     # than a resolve link then convert it to a resolve link
