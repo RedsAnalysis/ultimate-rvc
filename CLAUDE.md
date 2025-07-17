@@ -165,6 +165,60 @@ Key environment variables for customization:
 - Example: "Initial commit: Advent of Code 2024 Rust workspace setup"
 - **NEVER include co-authoring or Claude references in commit messages**
 
+## Test Development Methodology
+
+**Note**: Comprehensive test plan is located in `notes/test_plan.md`
+
+### Test Development Order (Evidence-Based)
+
+Based on research from Google, Microsoft, and the Testing Pyramid, ALWAYS follow this development order:
+
+1. **Unit Tests First** (70-80% of total tests)
+   - Test individual functions in isolation
+   - Use mocks for external dependencies
+   - Focus on edge cases, error conditions, and happy paths
+
+2. **Intra-module Integration Tests** (after unit tests for each module)
+   - Test how functions within the same module work together
+   - Use realistic data where appropriate
+   - Test module-level workflows
+
+3. **Inter-module Integration Tests** (after dependent modules are unit tested)
+   - Test how different modules interact
+   - Test data flow between modules
+   - Test module boundary conditions
+
+4. **System Integration Tests** (after all module testing is complete)
+   - Test cross-system workflows
+   - Test system-wide error handling
+   - Test performance at system level
+
+5. **End-to-End Tests Last** (5-10% of total tests)
+   - Test complete user workflows
+   - Most expensive to maintain
+   - Use realistic audio and real models
+
+### Test Development Principles
+
+- **ALWAYS do in-depth analysis** of each function before writing tests
+- **Bottom-up approach**: Test foundational modules first (dependencies)
+- **Module-by-module**: Complete all test types for a module before moving to next
+- **Conservative mocking**: Only mock external APIs, not internal logic
+- **Case-by-case decisions**: Audio and model mocking based on specific test needs
+- **Integration/E2E tests**: Use realistic audio and real models most of the time
+- **Avoid test duplication**: Always check existing codebase for similar tests before creating new ones
+  - Especially important for integration tests at different levels (intra-module, inter-module, system)
+  - Review existing test structure to avoid redundant coverage
+  - Ensure each test has a unique purpose and scope
+
+### Audio/ML Testing Strategy
+
+- **Unit tests**: Synthetic audio often acceptable (decide case-by-case)
+- **Integration tests**: Realistic audio preferred
+- **E2E tests**: Always use realistic audio and real models
+- **Performance tests**: Use realistic data for accurate measurements
+- **Training tests**: Use small but realistic datasets
+
 ## Code Quality Enforcement
 
 ### Pre-commit Hooks (Active)
