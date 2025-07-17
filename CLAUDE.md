@@ -198,6 +198,33 @@ Based on research from Google, Microsoft, and the Testing Pyramid, ALWAYS follow
    - Most expensive to maintain
    - Use realistic audio and real models
 
+### Critical Testing Practices
+
+**ALWAYS Follow These Rules:**
+
+1. **Folder Structure Flexibility**
+   - Test folder structure is NOT set in stone and should not restrict development
+   - NEVER repeat tests - if there's a better way to bundle existing tests, restructure as needed
+   - Test organization should serve the tests, not the other way around
+
+2. **Quality Assurance Process**
+   - **ALWAYS run pre-commit hooks after finishing ANY test** to ensure it works correctly
+   - Alternatively, run linting and type checking directly on test files
+   - **Never claim tests are "fixed" or "done" without running pre-commit successfully**
+   - This includes both type checking (pyright) and linting (ruff) validation
+
+3. **Test Development Process**
+   - **Read the test plan THOROUGHLY between writing tests** (located in `notes/test_plan.md`)
+   - Don't skip ahead - understand the full context before implementing
+   - Each test should align with the overall testing strategy
+   - When in doubt, refer back to the plan before making decisions
+
+4. **Parallel Task Execution**
+   - **Use Task tool for parallel work** when fixing clearly parallel tasks like separate files
+   - **Use Task tool when waiting for user input** - spawn subworkers to continue other tasks
+   - **Decide whether to keep or discard** subworker results based on user feedback
+   - This allows continuous progress rather than blocking on user input
+
 ### Test Development Principles
 
 - **ALWAYS do in-depth analysis** of each function before writing tests
