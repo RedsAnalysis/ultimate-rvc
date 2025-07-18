@@ -173,6 +173,10 @@ preview = true
 
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["T201"] # Allow print statements in Jupyter notebooks
+"tests/**/*.py" = [
+  "S101",
+  "PLR6301",
+] # Allow assert statements in test files, ignore unused self in pytest test methods
 
 [tool.ruff.lint.flake8-annotations]
 #ignore-fully-untyped = true

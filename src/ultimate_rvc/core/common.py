@@ -120,11 +120,14 @@ def copy_files_to_new_dir(files: Sequence[StrPath], directory: StrPath) -> None:
 
     """
     dir_path = Path(directory)
-    dir_path.mkdir(parents=True)
+    file_paths: list[Path] = []
     for file in files:
         file_path = Path(file)
         if not file_path.exists():
             raise NotFoundError(entity=Entity.FILE, location=file_path)
+        file_paths.append(file_path)
+    dir_path.mkdir(parents=True)
+    for file_path in file_paths:
         shutil.copyfile(file_path, dir_path / file_path.name)
 
 
@@ -135,9 +138,9 @@ def copy_file_safe(src: StrPath, dest: StrPath) -> Path:
 
     Parameters
     ----------
-    src : strPath
+    src : StrPath
         The source file path.
-    dest : strPath
+    dest : StrPath
         The candidate destination file path.
 
     Returns
@@ -147,14 +150,13 @@ def copy_file_safe(src: StrPath, dest: StrPath) -> Path:
 
     """
     dest_path = Path(dest)
-    src_path = Path(src)
     dest_dir = dest_path.parent
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest_file = dest_path
     counter = 1
 
     while dest_file.exists():
-        dest_file = dest_dir / f"{dest_path.stem} ({counter}){src_path.suffix}"
+        dest_file = dest_dir / f"{dest_path.stem} ({counter}){dest_path.suffix}"
         counter += 1
 
     shutil.copyfile(src, dest_file)
