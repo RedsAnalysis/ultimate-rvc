@@ -9,7 +9,50 @@
 
 ## My initial notes for Claude
 
-I have already set up some configuration for testing with pytest in the `pyproject.toml` file. The next step is to setup the rest of the testing infrastructure:
+I have already set up some configuration for testing with pytest in the `pyproject.toml` file.
+
+## How to Run Tests
+
+```bash
+# Run all tests
+./urvc uv run pytest
+
+# Run specific test file
+./urvc uv run pytest tests/unit/core/test_common.py
+
+# Run with verbose output
+./urvc uv run pytest -v
+
+# Run specific test class or method
+./urvc uv run pytest tests/unit/core/test_common.py::TestDisplayProgress
+./urvc uv run pytest tests/unit/core/test_common.py::TestDisplayProgress::test_display_progress_with_message_only
+
+# Run tests matching pattern
+./urvc uv run pytest -k "test_display_progress"
+
+# Run with coverage report
+./urvc uv run pytest --cov
+
+# Run and stop on first failure
+./urvc uv run pytest -x
+
+# Run specific test categories
+./urvc uv run pytest -m "not slow"     # Exclude slow tests
+./urvc uv run pytest -m "network"     # Only network tests
+./urvc uv run pytest -m "gpu"         # Only GPU tests
+./urvc uv run pytest -m "audio"       # Only audio tests
+./urvc uv run pytest -m "cli"         # Only CLI tests
+
+# Run tests in parallel (faster)
+./urvc uv run pytest -n auto
+
+# Run with detailed coverage report
+./urvc uv run pytest --cov --cov-report=html
+```
+
+## Test Infrastructure Setup
+
+The next step is to setup the rest of the testing infrastructure:
 
 1. You should start by reading your general claude.md file for general info on how to do testing
 

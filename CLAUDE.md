@@ -41,13 +41,50 @@ The project supports both web UI (Gradio) and CLI interfaces, with GPU accelerat
 
 ### Testing
 
-No formal test suite is currently implemented. Testing primarily occurs through:
+The project uses pytest for comprehensive testing with unit, integration, and end-to-end test coverage.
 
-- Manual testing via web UI and CLI
-- Model inference validation
-- Audio processing pipeline verification
+**Running Tests:**
 
-TBD: Automated tests using pytest with fixtures and parametrization
+```bash
+# Run all tests
+./urvc uv run pytest
+
+# Run specific test file
+./urvc uv run pytest tests/unit/core/test_common.py
+
+# Run with verbose output
+./urvc uv run pytest -v
+
+# Run specific test class or method
+./urvc uv run pytest tests/unit/core/test_common.py::TestDisplayProgress
+./urvc uv run pytest tests/unit/core/test_common.py::TestDisplayProgress::test_display_progress_with_message_only
+
+# Run tests matching pattern
+./urvc uv run pytest -k "test_display_progress"
+
+# Run with coverage report
+./urvc uv run pytest --cov
+
+# Run and stop on first failure
+./urvc uv run pytest -x
+
+# Run specific test categories
+./urvc uv run pytest -m "not slow"     # Exclude slow tests
+./urvc uv run pytest -m "network"     # Only network tests
+./urvc uv run pytest -m "gpu"         # Only GPU tests
+```
+
+**Test Structure:**
+
+- `tests/unit/` - Unit tests (isolated function testing)
+- `tests/integration/` - Integration tests (module interactions)  
+- `tests/e2e/` - End-to-end tests (full workflows)
+
+**Test Requirements:**
+
+- All tests must pass pre-commit hooks (linting, type checking)
+- Minimum 90% test coverage required
+- Use realistic data for integration/E2E tests, synthetic for unit tests
 
 ## Architecture Overview
   
