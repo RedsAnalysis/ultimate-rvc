@@ -87,25 +87,12 @@ The next step is to setup the rest of the testing infrastructure:
 
 3. For further insight into this project you should read the README.md and also glance through the code itself
 
-4. Some additional things you need to keep in mind:
-   - All tests that are written should comply with the linting and type checking rules we have set up
-   - All tests should have at least 90% test coverage. This is a necessary requirement but not sufficient for tests to be done
-   - You should never move on to a new test before the above mentioned points are satisfied
-   - You should work methodically and start small: this means starting with testing of the core module, and specifically those submodules that are used first, i.e. stuff like common files. Same methodology applies when testing other modules later on.
-   - As you work, you should ALWAYS clean up after yourself, i.e. remove any files as soon as they are no longer needed. You should make a habit of asking yourself: "Do i need to clean up now?" after every step you take.
-   - Whenever you discover something is not working as expected or figure out a better way to do something, you should document it in your claude.md file. This will help you remember it later and also help others who might work on this project in the future.
-   - You should always err on the side of caution instead of writing more tests, especially in the beginning. Once we have a solid foundation, you can become more independent, by relying on the existing tests for structure and guidance.
-   - NEVER THINK that you are done with this testing task.
-      - Whenever you are inclined to think "The testing task is done" then instead look at the the file you just edited and go through each line, to see if something can be improved.
-      - similarly, whenver you are inclined to think "Now I am done testing this module" instead iterate and look at each submodule and see if there is something that can be improved.
-      - WHen you iterate, you should keep in mind not to regress by overengineering or removing things that are already working. Remember, you can always ask me if you are unsure about something.
+4. You should make a plan based on your findings. This plan should be appended to this file. You then extend the plan with more specific tasks and subtasks as progress, ideally split into sections and subsections which have items to cross off
 
-5. You should make a plan based on your findings. This plan should be appended to this file. You then extend the plan with more specific tasks and subtasks as progress, ideally split into sections and subsections which have items to cross off
+5. Once you have a starting plan, you should report back to me so i can review it and we can discuss it further
 
-6. Once you have a starting plan, you should report back to me so i can review it and we can discuss it further
-
-7. once the plan is approved, you should test up a dummy test to test that all infrastructure is working as expected. If this requires setting up lots of files that is okay, but you should REMEMEBER to delete them once you are done(assuming they are not needed for the next step).
-8. You should report your findings to me from the dummy experiment. Once we have established that the testing infrastructure is working, you should document all aspects of how to use it both in your own Claude.md file and also in the README.md file of the project. This should include:
+6. once the plan is approved, you should test up a dummy test to test that all infrastructure is working as expected. If this requires setting up lots of files that is okay, but you should REMEMEBER to delete them once you are done(assuming they are not needed for the next step).
+7. You should report your findings to me from the dummy experiment. Once we have established that the testing infrastructure is working, you should document all aspects of how to use it both in your own Claude.md file and also in the README.md file of the project. This should include:
    - How to run tests
    - How to add new tests
    - How to mock data
@@ -184,6 +171,25 @@ Based on my analysis of the project structure, CLAUDE.md guidance, and research 
 - Configuration file fixtures for testing different settings
 - Test dataset creation utilities (primarily for training functionality)
 - Minimal RVC model fixtures for testing (lightweight models)
+
+## Critical Testing Principles
+
+- All tests that are written should comply with the linting and type checking rules we have set up
+- All tests should have at least 90% test coverage. This is a necessary requirement but not sufficient for tests to be done
+- You should never move on to a new test before the above mentioned points are satisfied
+- **NEVER change application code without EXPLICIT permission from user**
+- **Always test ALL cases**: positive, negative, and edge cases for each function
+- **Look for bugs in functions being tested** - most are correct, but some may have issues
+- **Report any suspected bugs** but do not fix without permission
+- **Test comprehensively** - every function parameter, return value, and exception path
+  - You should work methodically and start small: this means starting with testing of the core module, and specifically those submodules that are used first, i.e. stuff like common files. Same methodology applies when testing other modules later on.
+  - As you work, you should ALWAYS clean up after yourself, i.e. remove any files as soon as they are no longer needed. You should make a habit of asking yourself: "Do i need to clean up now?" after every step you take.
+  - Whenever you discover something is not working as expected or figure out a better way to do something, you should document it in your claude.md file. This will help you remember it later and also help others who might work on this project in the future.
+  - You should always err on the side of caution instead of writing more tests, especially in the beginning. Once we have a solid foundation, you can become more independent, by relying on the existing tests for structure and guidance.
+  - NEVER THINK that you are done with this testing task.
+    - Whenever you are inclined to think "The testing task is done" then instead look at the the file you just edited and go through each line, to see if something can be improved.
+    - similarly, whenver you are inclined to think "Now I am done testing this module" instead iterate and look at each submodule and see if there is something that can be improved.
+    - WHen you iterate, you should keep in mind not to regress by overengineering or removing things that are already working. Remember, you can always ask me if you are unsure about something.
 
 ### Phase 1: Testing Infrastructure Status
 

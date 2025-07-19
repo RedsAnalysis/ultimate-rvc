@@ -254,7 +254,7 @@ class ModelNotFoundError(EntityNotFoundError):
 
         Parameters
         ----------
-        entity : str
+        entity : ModelEntity
             The model entity that was not found.
         name : str
             The name of the model that was not found.
@@ -337,7 +337,7 @@ class IncompatiblePretrainedModelError(OSError):
         name : str
             The name of the pretrained model that is incompatible with
             a given sample rate.
-        sample_rate : PretrainedSampleRate
+        sample_rate : int
             The sample rate that the pretrained model is incompatible
             with.
 
@@ -416,12 +416,12 @@ class ModelAsssociatedEntityNotFoundError(OSError):
 
         Parameters
         ----------
-        entity : str
+        entity : Entity
             The entity that is not associated with the model.
         model_name : str
             The name of the model that the entity is not associated
             with.
-        required_step : str, default=None
+        required_step : Step | None, default=None
             The required step that needs to be run before will be
             associated with the model.
 
@@ -473,7 +473,7 @@ class ModelExistsError(EntityExistsError):
 
         Parameters
         ----------
-        entity : str
+        entity : ModelEntity
             The model entity that already exists.
         name : str
             The name of the model that already exists.
@@ -605,9 +605,9 @@ class YoutubeUrlError(OSError):
             Whether the URL might point to a YouTube playlist.
 
         """
-        suffix = "or playlist" if playlist else ""
+        suffix = " or playlist" if playlist else ""
         super().__init__(
-            f"Not able to access Youtube video {suffix} at: {url}",
+            f"Not able to access Youtube video{suffix} at: {url}",
         )
 
 

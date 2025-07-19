@@ -86,6 +86,14 @@ The project uses pytest for comprehensive testing with unit, integration, and en
 - Minimum 90% test coverage required
 - Use realistic data for integration/E2E tests, synthetic for unit tests
 
+**Critical Testing Principles:**
+
+- **NEVER change application code without EXPLICIT permission from user**
+- **Always test ALL cases**: positive, negative, and edge cases for each function
+- **Look for bugs in functions being tested** - most are correct, but some may have issues
+- **Report any suspected bugs** but do not fix without permission
+- **Test comprehensively** - every function parameter, return value, and exception path
+
 ## Architecture Overview
   
 ### Core Structure
@@ -186,6 +194,18 @@ Key environment variables for customization:
   - DO NOT commit unless asked to do so.
 
 - **IMPORTANT: When commiting always include all changes for the given task**
+
+### REMEMBER: Comprehensive testing reveals implementation issues
+
+### Bug Discovery and Documentation Workflow
+
+- **ALWAYS document implementation issues immediately when discovered during testing**
+  - As soon as you discover something, document it in appropriate analysis files
+  - Don't wait for user to ask for implementation issues
+  - Create detailed analysis with severity, category, location, impact, and recommendations
+  - After testing completion, user reviews the document to decide true positives vs false positives
+  - Then fix true positives and update tests accordingly
+  - This workflow ensures systematic issue tracking and prevents bugs from being forgotten
 
 - **When implementing a new feature always publish a new version to pypi**
 
@@ -314,6 +334,23 @@ preventing broken or poorly formatted code from entering the repository.
 - **Docstring line breaking**: NEVER use `#` continuation in comments
   - ✅ Extend continuation lines to ~80 characters when possible unless at section end
   - ✅ Break at natural sentence/phrase boundaries for readability
+- **Docstring format**: If docstrings can't fit on one line (>72 chars), use proper multi-line format:
+  - ✅ Correct multi-line format - BREAK THE CONTENT within the docstring:
+
+    ```python
+    def function():
+        \"\"\"
+        Test ConfigNotFoundError with different configuration
+        names.
+        \"\"\"
+    ```
+
+  - ❌ NEVER use single-line docstrings that exceed 72 characters
+  - ❌ NEVER shorten descriptive text to fit on one line
+  - ❌ NEVER keep long content on single line within multi-line format
+  
+  **WRONG APPROACH**: Just putting triple quotes on separate lines but keeping long content on one line
+  **CORRECT APPROACH**: Break the content itself across multiple lines
 
 ## Documentation Best Practices
 
