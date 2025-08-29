@@ -1,17 +1,4 @@
 services:
-<<<<<<< HEAD
-  rvc:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ultimate-rvc
-    container_name: ultimate-rvc
-    runtime: nvidia
-    ports:
-      - "7865:7865"
-    restart: "no"
-    command: ["uv","run", "./src/ultimate_rvc/web/main.py"]
-=======
   ultimate-rvc:
     build: .
     container_name: ultimate-rvc
@@ -31,4 +18,3 @@ services:
             - driver: nvidia
               count: all # Use all available GPUs
               capabilities: [gpu]
->>>>>>> a362291 (Added docker-file , Testing is pending)

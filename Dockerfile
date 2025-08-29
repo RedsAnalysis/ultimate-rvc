@@ -1,64 +1,7 @@
-<<<<<<< HEAD
-# Use NVIDIA CUDA base image for GPU support
-FROM nvidia/cuda:12.5.1-runtime-ubuntu24.04
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    build-essential \
-    unzip \
-    python3-pip \
-    python3-venv \
-    git \
-    ffmpeg \
-    sox \
-    libsox-dev \
-    libsndfile1 \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-
-# Set up UV environment variables
-ENV UV_PATH=./uv
-ENV VENV_PATH=$UV_PATH/.venv
-
-ENV UV_UNMANAGED_INSTALL=$UV_PATH
-ENV UV_PYTHON_INSTALL_DIR="$UV_PATH/python"
-ENV UV_PYTHON_BIN_DIR="$UV_PATH/python/bin"
-ENV VIRTUAL_ENV=$VENV_PATH
-ENV UV_PROJECT_ENVIRONMENT=$VENV_PATH
-ENV UV_TOOL_DIR="$UV_PATH/tools"
-ENV UV_TOOL_BIN_DIR="$UV_PATH/tools/bin"
-ENV GRADIO_NODE_PATH="$VENV_PATH/lib/python3.12/site-packages/nodejs_wheel/bin/node"
-ENV PATH="$UV_PATH:$PATH"
-
-RUN curl -LsSf https://astral.sh/uv/0.6.3/install.sh | UV_ROOT=$UV_PATH sh 
-
-# Copy project files
-COPY . /app/
-
-# Install dependencies using uv with full path
-RUN uv run ./src/ultimate_rvc/core/main.py
-
-# Expose port for web interface
-EXPOSE 7865
-
-# Set default command to run the web interface
-CMD ["uv","run", "./src/ultimate_rvc/web/main.py"]
-=======
 # --- Stage 1: The Builder (uses the project's own setup script) ---
 # We use a 'devel' image which contains all the necessary build tools.
-FROM nnvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04 AS builder
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04 AS builder
 
 # The urvc.sh script uses 'sudo', so we need to install it.
 RUN apt-get update && apt-get install -y sudo curl
@@ -120,4 +63,3 @@ EXPOSE 7860
 # The command to run when the container starts.
 # This executes the web UI using the python from our copied virtual environment.
 CMD ["python", "-m", "src.ultimate_rvc.web.main"]
->>>>>>> a362291 (Added docker-file , Testing is pending)
