@@ -5,6 +5,8 @@ services:
     
     # Optional: Give the running container a consistent name.
     container_name: ultimate-rvc
+
+    command: sh -c "./urvc run"
     
     # Map port 7860 on your host to 7860 in the container.
     ports:

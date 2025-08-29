@@ -44,10 +44,10 @@ ENV GRADIO_SERVER_NAME="0.0.0.0"
 RUN echo "--- Copying Artifacts from Builder Stage ---"
 # Copy the Python virtual environment created by the installer.
 COPY --from=builder /build/uv /app/uv
-# Copy the core AI models downloaded by the installer.
 COPY --from=builder /build/models /app/models
-# Copy the application source code itself.
 COPY --from=builder /build/src /app/src
+COPY --from=builder /build/audio /app/audio
+COPY --from=builder /build/logs /app/logs
 RUN echo "--- Artifacts Copied ---"
 
 # Copy the main 'urvc' script into the final image.
