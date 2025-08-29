@@ -1,60 +1,60 @@
-
-# --- Stage 1: The Builder (uses the project's own setup script) ---
-# We use a 'devel' image which contains all the necessary build tools.
+# --- Stage 1: The Builder ---
+# Game Plan Step 1 & 2: Use a base image and install only the minimal dependencies needed for the install script.
 FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu24.04 AS builder
 
-# The urvc.sh script uses 'sudo', so we need to install it.
-RUN apt-get update && apt-get install -y sudo curl
+# We add `git`, `sudo`, `curl`, and `wget` as they are all required by the 'urvc' script.
+RUN apt-get update && apt-get install -y git sudo curl wget
 
-# Set the working directory for the build.
-WORKDIR /app
+# Game Plan Step 3: Clone the repo into a /build directory.
+WORKDIR /build
 
-# Copy the entire project into the builder stage.
-COPY . .
+# We add ECHO statements to track progress.
+RUN echo "--- Cloning Repository ---"
+ARG GIT_REF=main
+RUN git clone https://github.com/JackismyShephard/ultimate-rvc.git . && \
+    git checkout ${GIT_REF}
 
-# Make the installation script executable.
+# Game Plan Step 4: Run ./urvc install and wait for dirs to pop up.
+RUN echo "--- Preparing Installation Script ---"
 RUN chmod +x ./urvc
 
-# ... (adapt the script)
-RUN sed -i '/install_cuda_128/d' ./urvc
-RUN sed -i '/install_distro_specifics/d' ./urvc
 
-# ... (run the installer)
-RUN ./urvc install
+# We correct your command from `... | sh` to the direct execution.
+RUN echo "--- Running the Installer, this will take some time... ---"
+RUN ./urvc docker
+RUN echo "--- Installation Complete. The following directories were created: ---"
+RUN ls -ld */
 
-# At the end of this stage, the builder has a complete, working installation
-# located in /app, including the venv and the core models.
+# At the end of this stage, '/build' contains the source code AND the newly created 'uv' and 'models' directories.
 
 # --- Stage 2: The Final, Lean Runtime Image ---
-# We switch to a smaller 'runtime' image which doesn't have build tools.
+# Game Plan Step 5 & 6: Build the final image and copy over important files.
 FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
 
-# Set environment variables needed for the app to run.
+# Set up the final application directory and user.
+WORKDIR /app
+RUN useradd -ms /bin/bash appuser
+
+# Define environment variables for the application to find its Python environment.
 ENV VENV_PATH=/app/uv/.venv
 ENV PATH="/app/uv/bin:${VENV_PATH}/bin:${PATH}"
 ENV GRADIO_SERVER_NAME="0.0.0.0"
 
-# Create a dedicated, non-root user for running the application for security.
-RUN useradd -ms /bin/bash appuser
-WORKDIR /app
+# Game Plan Step 7: Copy over the important files and directories.
+RUN echo "--- Copying Artifacts from Builder Stage ---"
+# Copy the Python virtual environment created by the installer.
+COPY --from=builder /build/uv /app/uv
+# Copy the core AI models downloaded by the installer.
+COPY --from=builder /build/models /app/models
+# Copy the application source code itself.
+COPY --from=builder /build/src /app/src
+RUN echo "--- Artifacts Copied ---"
 
-# --- Copy finished artifacts from the builder stage ---
-# We meticulously copy ONLY what is needed to run the application.
-
-# Copy the entire 'uv' directory, which contains the uv binary and the Python venv.
-COPY --from=builder /app/uv /app/uv
-# Copy the downloaded core models (separators, predictors, etc.).
-COPY --from=builder /app/models /app/models
-# Copy the application source code, which is needed to execute the web UI.
-COPY --from=builder /app/src /app/src
-
-# Set the ownership of all application files to our non-root user.
+# Set correct ownership for the app files so our non-root user can use them.
 RUN chown -R appuser:appuser /app
 USER appuser
 
-# Expose the port the Gradio web UI will listen on.
 EXPOSE 7860
 
-# The command to run when the container starts.
-# This executes the web UI using the python from our copied virtual environment.
-CMD ["python", "-m", "src.ultimate_rvc.web.main"]
+# The final command to start the web server. We use the absolute path to Python for maximum reliability.
+CMD ["/app/uv/.venv/bin/python", "-m", "src.ultimate_rvc.web.main"]
