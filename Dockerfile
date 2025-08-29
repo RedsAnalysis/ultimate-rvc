@@ -50,6 +50,11 @@ COPY --from=builder /build/models /app/models
 COPY --from=builder /build/src /app/src
 RUN echo "--- Artifacts Copied ---"
 
+# Copy the main 'urvc' script into the final image.
+COPY --from=builder /build/urvc /app/urvc
+# Make it executable.
+RUN chmod +x /app/urvc
+
 # Set correct ownership for the app files so our non-root user can use them.
 RUN chown -R appuser:appuser /app
 USER appuser
@@ -57,4 +62,4 @@ USER appuser
 EXPOSE 7860
 
 # The final command to start the web server. We use the absolute path to Python for maximum reliability.
-CMD ["/app/uv/.venv/bin/python", "-m", "src.ultimate_rvc.web.main"]
+CMD ["./urvc", "run"]

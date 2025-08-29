@@ -1,20 +1,27 @@
 services:
   ultimate-rvc:
+    # This tells Compose to build the image using our Dockerfile.
     build: .
+    
+    # Optional: Give the running container a consistent name.
     container_name: ultimate-rvc
+    
+    # Map port 7860 on your host to 7860 in the container.
     ports:
       - "7860:7860"
+      
+    # Mount local directories for your persistent data.
     volumes:
-      # Your custom voice models are stored on your host machine and mounted into the container.
       - ./models/rvc/voice_models:/app/models/rvc/voice_models
-      # Your input/output audio files.
       - ./audio:/app/audio
-      # Persistent logs.
       - ./logs:/app/logs
+      - ./temp:/app/temp
+      
+    # Enable GPU access.
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: all # Use all available GPUs
+              count: all
               capabilities: [gpu]
