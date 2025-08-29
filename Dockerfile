@@ -13,19 +13,14 @@ WORKDIR /app
 COPY . .
 
 # Make the installation script executable.
-RUN chmod +x ./urvc.sh
+RUN chmod +x ./urvc
 
-# --- A critical step: We adapt the script for a container environment ---
-# The nvidia base image already provides CUDA. The script's attempt to install it
-# will fail. We use 'sed' to safely remove the lines that call the CUDA
-# and distro-specific installation functions.
-RUN sed -i '/install_cuda_128/d' ./urvc.sh
-RUN sed -i '/install_distro_specifics/d' ./urvc.sh
+# ... (adapt the script)
+RUN sed -i '/install_cuda_128/d' ./urvc
+RUN sed -i '/install_distro_specifics/d' ./urvc
 
-# Run the install command from the script.
-# This will create the './uv' directory with the python virtual environment
-# and download the core application models.
-RUN ./urvc.sh install
+# ... (run the installer)
+RUN ./urvc install
 
 # At the end of this stage, the builder has a complete, working installation
 # located in /app, including the venv and the core models.
