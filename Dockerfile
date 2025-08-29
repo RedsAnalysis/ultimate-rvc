@@ -16,12 +16,12 @@ RUN git clone https://github.com/JackismyShephard/ultimate-rvc.git . && \
 
 # Game Plan Step 4: Run ./urvc install and wait for dirs to pop up.
 RUN echo "--- Preparing Installation Script ---"
-RUN sudo chmod +x ./urvc
+RUN chmod +x ./urvc
 
 
 # We correct your command from `... | sh` to the direct execution.
 RUN echo "--- Running the Installer, this will take some time... ---"
-RUN sudo ./urvc docker
+RUN ./urvc docker
 RUN echo "--- Installation Complete. The following directories were created: ---"
 RUN ls -ld */
 
