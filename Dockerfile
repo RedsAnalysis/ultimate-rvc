@@ -10,8 +10,8 @@ WORKDIR /build
 
 # We add ECHO statements to track progress.
 RUN echo "--- Cloning Repository ---"
-ARG GIT_REF=main
-RUN git clone git clone --single-branch --branch docker-support https://github.com/RedsAnalysis/ultimate-rvc.git . && \
+ARG GIT_REF=docker-support
+RUN git clone https://github.com/RedsAnalysis/ultimate-rvc.git . && \
     git checkout ${GIT_REF}
 
 # Game Plan Step 4: Run ./urvc install and wait for dirs to pop up.
