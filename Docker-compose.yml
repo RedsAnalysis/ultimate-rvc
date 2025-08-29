@@ -1,0 +1,34 @@
+services:
+<<<<<<< HEAD
+  rvc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ultimate-rvc
+    container_name: ultimate-rvc
+    runtime: nvidia
+    ports:
+      - "7865:7865"
+    restart: "no"
+    command: ["uv","run", "./src/ultimate_rvc/web/main.py"]
+=======
+  ultimate-rvc:
+    build: .
+    container_name: ultimate-rvc
+    ports:
+      - "7860:7860"
+    volumes:
+      # Your custom voice models are stored on your host machine and mounted into the container.
+      - ./models/rvc/voice_models:/app/models/rvc/voice_models
+      # Your input/output audio files.
+      - ./audio:/app/audio
+      # Persistent logs.
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Use all available GPUs
+              capabilities: [gpu]
+>>>>>>> a362291 (Added docker-file , Testing is pending)

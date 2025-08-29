@@ -1,0 +1,27 @@
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# Python virtual environment and cache generated on the host
+.venv
+__pycache__
+*.pyc
+*.pyo
+uv
+uv.lock
+
+# User-generated data that will be handled by volumes
+audio
+models
+logs
+temp
+
+# Development and documentation files
+tests
+notebooks
+notes
+CLAUDE.md
