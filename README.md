@@ -172,9 +172,7 @@ The behaviour of the Ultimate RVC project can be customized via a number of envi
 
 ## Help & Community
 
-If you experience (reproducible) bugs or have specific feature requests we encourage you to file a new issue here on GitHub. 
-
-For broader discussions on the development of Ultimate RVC, as well as connecting with other users, we encourage you to join our Discord [server](https://discord.gg/T4ejEz8HtX) or check out the [Discussions](https://github.com/JackismyShephard/ultimate-rvc/discussions) page here on GitHub.
+If you experience (reproducible) bugs or have specific feature requests we encourage you to file a new issue here on GitHub. For broader discussions on the development of Ultimate RVC, as well as connecting with other users, we encourage you to join our Discord [server](https://discord.gg/T4ejEz8HtX) or check out the [Discussions](https://github.com/JackismyShephard/ultimate-rvc/discussions) page here on GitHub.
 
 ## Terms of Use
 
