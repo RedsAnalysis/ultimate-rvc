@@ -1,0 +1,30 @@
+services:
+  ultimate-rvc:
+    # This tells Compose to build the image using our Dockerfile.
+    build: .
+
+    image: ultimate-rvc-app:1.0
+    
+    # Optional: Give the running container a consistent name.
+    container_name: ultimate-rvc
+    
+    # Map port 7865 on your host to 7865 in the container.
+    ports:
+      - "7860:7860"
+      
+    # Mount local directories for your persistent data.
+    volumes:
+      - ./models/rvc/voice_models:/app/models/rvc/voice_models
+      - ./audio:/app/audio
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+      
+    # Enable GPU access.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
