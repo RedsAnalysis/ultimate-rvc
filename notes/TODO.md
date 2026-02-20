@@ -1,5 +1,36 @@
 # TODO
 
+* In simple_cut method, when normalization_mode == "post", if _normalize_audio returns None (when tmp_max > 2.5), the code will fail at line 143 with AttributeError when trying to call .astype() on None. The function should handle this case by checking if the normalized chunk is None before writing it.
+* Variable p_len is not used in get_f0 functions.
+* issue with caching for step 2:
+  * results from pitch extracton and embedding extraction are saved with names corresponding to the audio files they were generated from.
+  * When rerunning they are not recomputed if output files already exist.
+  * Problem is that a user can go back to step 1: audio prporcessing and create a new set of files with the same names as before but with different content.
+  * In this case the cached files will not be recomputed even though they should be.
+  * Temporary solution: always delete cached files befor running step 2 again.
+  * long term solution: save all param used for generation in step 1 in model_info.json. We can also have a model_info.json inside each subfolder lik f0___ embedder_extracted etc. then compare the one in root folder with the one in a subfolder to decide if it should be deleted before running step 2 again.
+  * another alterantive: in both step 1 audio preprocessing and step 2 always save all parameters into model_info.json. onceptually then we should be able to just hash this json compare it to hash in each file and that way determine if it needs to be recomputed. We can also skip the file level and instead do it folder level but then we might have an issue with computing the hash as we need to take into account the names of the files in the folder too or perhaps we can get away with computing the hash of the concatenated hashes of each file in the folder.
+* potential issue, when continuing training, even if threshold for overtraining has already been reached, one more epoch is still trained. This is because the check for overtraining is only done after an epoch is completed. Consider whether this is an issue or not.
+* Ideally we should try to load pretrained model into model architecture before starting training to catch any potential issues and report them as proper exceptions from main process, rather than as now where they are reported from training subprocess and only show up in logging.
+
+* Test if custom embeddder models stil work
+* fix issue with lazy loader for package on windows:
+c:\Users\Jacki\test-project\.venv\Lib\site-packages\lazy_loader\__init__.py:202: RuntimeWarning: subpackages can technically be lazily loaded, but it causes the package to be eagerly loaded even if it is already lazily loaded.So, you probably shouldn't use subpackages with this lazy feature.
+  warnings.warn(msg, RuntimeWarning)
+* fix issue with async network on windows:
+2025-11-30 23:09:50 - ERROR - asyncio - Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)
+handle: <Handle _ProactorBasePipeTransport._call_connection_lost(None)>
+Traceback (most recent call last):
+  File "C:\Users\Jacki\AppData\Local\Programs\Python\Python312\Lib\asyncio\events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\Jacki\AppData\Local\Programs\Python\Python312\Lib\asyncio\proactor_events.py", line 165, in_call_connection_lost
+    self._sock.shutdown(socket.SHUT_RDWR)
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+* fix issue with models table in UI auto scrolling and being unresponsive
+
+* upgrade gradio to 6 and fix warnings
+* check in uv.lock?
+  
 * num threads has been hardcoded to be 1 for crepe as it fails with multiple threads. But this is not reflected in documentation for core API and CLI and UI still shows slider for number of threads. Consider whether we need to update documentation and or have UI disable slider and set num threads to 1 when crepe is selected.
 
 * figure out a way of safely storing PyPI credentials

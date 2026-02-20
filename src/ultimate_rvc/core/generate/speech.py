@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 import lazy_loader as lazy
 
+import logging
 from pathlib import Path
 
 import anyio
@@ -50,7 +51,8 @@ from ultimate_rvc.typing_extra import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+
+    import aiohttp
 
     import gradio as gr
 
@@ -58,6 +60,9 @@ if TYPE_CHECKING:
 
 else:
     edge_tts = lazy.load("edge_tts")
+    aiohttp = lazy.load("aiohttp")
+
+logger = logging.getLogger(__name__)
 
 
 def list_edge_tts_voices(
@@ -121,8 +126,12 @@ def list_edge_tts_voices(
         "VoicePersonalities",
     ]
     all_keys: EdgeTTSKeys = keys + voice_tag_keys
+    try:
+        voices = anyio.run(edge_tts.list_voices)
+    except (OSError, aiohttp.ClientError):
+        logger.exception("Failed to fetch Edge TTS voices")
+        return [], all_keys
 
-    voices = anyio.run(edge_tts.list_voices)
     filtered_voices = [
         v
         for v in voices
@@ -463,14 +472,15 @@ def run_pipeline(
     tts_volume_change: int = 0,
     n_octaves: int = 0,
     n_semitones: int = 0,
-    f0_methods: Sequence[F0Method] | None = None,
+    f0_method: F0Method = F0Method.RMVPE,
     index_rate: float = 0.3,
     rms_mix_rate: float = 1.0,
     protect_rate: float = 0.33,
-    hop_length: int = 128,
     split_speech: bool = False,
     autotune_speech: bool = False,
     autotune_strength: float = 1,
+    proposed_pitch: bool = False,
+    proposed_pitch_threshold: float = 155.0,
     clean_speech: bool = False,
     clean_strength: float = 0.7,
     embedder_model: EmbedderModel = EmbedderModel.CONTENTVEC,
@@ -522,8 +532,8 @@ def run_pipeline(
         The number of semitones to shift the pitch of the speech
         converted using RVC.
 
-    f0_methods : list[F0Method], optional
-        The methods to use for pitch extraction during RVC.
+    f0_method: F0Method, default=F0Method.RMVPE
+        The method to use for pitch extraction during RVC.
 
     index_rate : float, default=0.3
         The influence of the index file used during RVC.
@@ -536,9 +546,6 @@ def run_pipeline(
         The protection rate for consonants and breathing sounds used
         during RVC.
 
-    hop_length : int, default=128
-        The hop length for CREPE-based pitch extraction used during RVC.
-
     split_speech : bool, default=False
         Whether to split the Edge TTS speech into smaller segments
         before converting it using RVC.
@@ -548,6 +555,13 @@ def run_pipeline(
 
     autotune_strength : float, default=1
         The strength of the autotune applied to the converted speech.
+
+    proposed_pitch: bool = False,
+        Whether to adjust the pitch of the speech converted using RVC so
+        that it matches the range of the voice model used.
+
+    proposed_pitch_threshold: float = 155.0,
+        The threshold for proposed pitch correction.
 
     clean_speech : bool, default=False
         Whether to clean the speech converted using RVC.
@@ -606,14 +620,15 @@ def run_pipeline(
         model_name=model_name,
         n_octaves=n_octaves,
         n_semitones=n_semitones,
-        f0_methods=f0_methods,
+        f0_method=f0_method,
         index_rate=index_rate,
         rms_mix_rate=rms_mix_rate,
         protect_rate=protect_rate,
-        hop_length=hop_length,
         split_audio=split_speech,
         autotune_audio=autotune_speech,
         autotune_strength=autotune_strength,
+        proposed_pitch=proposed_pitch,
+        proposed_pitch_threshold=proposed_pitch_threshold,
         clean_audio=clean_speech,
         clean_strength=clean_strength,
         embedder_model=embedder_model,
